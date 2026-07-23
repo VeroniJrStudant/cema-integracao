@@ -1,0 +1,1021 @@
+[
+  {
+    "campo": "acessovistoonline",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "ar_nomeformas_calc",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "comconfirmacaoleitura",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "descontoatedia",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "descontovalorfixo",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "dt_acordo_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_alteracao_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_alteracao_sincro",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_cancelamento_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_cartaotransacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_cieloultimatentativa_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_competencia_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_congelamento_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_desativacao_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_fechamento_cfe",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_geracao_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_ignorarstatus_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_impressao_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_liquidacao_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_pedidobaixapjbank_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_pedidoregistropjbank_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_previsaocredito_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_recebimento_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_suspensaocancelada_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "dt_vencimento_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "dt_vencimentooriginal_recb",
+    "tipo": "str",
+    "exemplo": "dd/mm/aaaa"
+  },
+  {
+    "campo": "era_cartao",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_acordofrentedecaixa_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_cartao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_cieloforcarpagamento_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_cofre",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_composicao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_conciliado_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_consultartidtardio_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_conta_homologada",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_contratoprorrogado_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_converterparanota_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_desconsiderarcontabilidade_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_despesasvinculadas_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_geracaonotificada_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_ignorarbloqueioauto_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_importacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_motivocancelar_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_nossonumerofixo_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_online_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_pagamentopref_sac",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_pessoajuridica_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_primeiranotificacao_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_primeiranotificacaocart_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_primeiranotificacaosms_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_proratadia_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_protestado_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_quartanotificacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_quintanotificacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_remessastatus_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_remessastatuscr_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_segundanotificacao_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_segundanotificacaocarta_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_segundanotificacaosms_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_sextanotificacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_status_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_status_spl",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_statussecuritizadora_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_temcomissao_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_terceiranotificacao_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_terceiranotificacaosms_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "fl_tipoentrega_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "fl_txdescontopersonalizada_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_adesao_plc",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_admcartoes_adc",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_bandeira_ban",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_cheque_pre",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_conta_cb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_contaorigem_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_contaoriginal_cb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_contrato_mens",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_empresa_emp",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_endereco_sen",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_fechamento_cfe",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_filial_fil",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_forma_frecb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_formaboleto_frecb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_formapagamento_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_lote_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "id_nota_not",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_online_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_operacaopjbank_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_operacaosecuritizadora_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_partidacontabil_pc",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_partidacontabilbaixa_pc",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_partidacontabilliquidacao_pc",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_recebimento_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_recebimentoantigo_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_renovacao_plc",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_sacado_sac",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_split_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "id_transacao_ctr",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "id_usuario_usu",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "identificador_leitura",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "link_2via",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "link_2via_json",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "msgdiasparadesconto",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "nm_anocartaovencimento_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "nm_cartao_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "nm_conveniopropriopjbank_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "nm_descontoatedia_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "nm_impressoes_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "nm_mescartaovencimento_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "nm_parcelacartao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "nm_remessa_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "nm_tagcriacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "nm_tagliquidacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "nm_tentativascartao_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "nm_tentativasenviocr_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "nm_versaorecebimento_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "nm_versaorecebimentopjbank_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "nm_visto_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "nome_formatado",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "publickey",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "publickey_json",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_accesskeycr_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_banco_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_cartaobandeira_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_cartaobandeira_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_cartaodetalhes_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_cep_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_cgc_sac",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_cielotid_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_cielotidcancelamento_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_codigoerrocartao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_codmovimentacaorem_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_complementocomposicao_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_complementolancignorado_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_descricao_cb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_documentoex_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "st_email_sac",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_errocartao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_falhacartao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_hashemailpag_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_hashparcelamento_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_idexterno_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_instrucoes_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_label_mens",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_label_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_label2_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_label3_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_maquina_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_marcador_calc",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_marcador_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_md5_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_motivocanceloutros_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_nf_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_nome_sac",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_nomeref_sac",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_nossonumero_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_numeroautorizacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_numerocartao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_observacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_observacaoexterna_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_observacaointerna_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_pixqrcode_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_sincro_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_splitdados_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_telefone_sac",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_tidconciliacao_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "st_tokendaconta_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "st_tokenfacilitador_recb",
+    "tipo": "str",
+    "exemplo": "XXX"
+  },
+  {
+    "campo": "tipo_conta",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "tx_bancaria",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "tx_cartaomensagem_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "tx_remessamsg_recb",
+    "tipo": "str",
+    "exemplo": ""
+  },
+  {
+    "campo": "vl_descontocalculado_recb",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_emitido_recb",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_taxacobranca_recb",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_total_recb",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_txdesconto_emp",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_txdesconto_recb",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_txjuros_emp",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_txjuros_recb",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_txmulta_emp",
+    "tipo": "int",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_txmulta_recb",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "vl_valorcreditado_calc",
+    "tipo": "float",
+    "exemplo": 0
+  },
+  {
+    "campo": "compo_recebimento",
+    "tipo": "list",
+    "exemplo": "XXX",
+    "itens_schema": [
+      {
+        "campo": "dt_contratacao_comp",
+        "tipo": "str"
+      },
+      {
+        "campo": "fl_especial_comp",
+        "tipo": "str"
+      },
+      {
+        "campo": "fl_opcional_prd",
+        "tipo": "int"
+      },
+      {
+        "campo": "id_boleto_comp",
+        "tipo": "int"
+      },
+      {
+        "campo": "id_boletopmm_comp",
+        "tipo": "int"
+      },
+      {
+        "campo": "id_composicao_comp",
+        "tipo": "int"
+      },
+      {
+        "campo": "id_mensalidade_comp",
+        "tipo": "int"
+      },
+      {
+        "campo": "id_pedido_ped",
+        "tipo": "str"
+      },
+      {
+        "campo": "id_pgmtindevido_comp",
+        "tipo": "str"
+      },
+      {
+        "campo": "id_planocliente_plc",
+        "tipo": "str"
+      },
+      {
+        "campo": "id_planoconta_plc",
+        "tipo": "int"
+      },
+      {
+        "campo": "id_produto_prd",
+        "tipo": "int"
+      },
+      {
+        "campo": "id_retornoitemduplicado_reti",
+        "tipo": "str"
+      },
+      {
+        "campo": "id_sacado_comp",
+        "tipo": "int"
+      },
+      {
+        "campo": "id_vendedor_comp",
+        "tipo": "str"
+      },
+      {
+        "campo": "nm_quantidade_comp",
+        "tipo": "int"
+      },
+      {
+        "campo": "st_complemento_comp",
+        "tipo": "str"
+      },
+      {
+        "campo": "st_conta_cont",
+        "tipo": "str"
+      },
+      {
+        "campo": "st_descricao_comp",
+        "tipo": "str"
+      },
+      {
+        "campo": "st_descricao_prd",
+        "tipo": "str"
+      },
+      {
+        "campo": "st_mesano_comp",
+        "tipo": "str"
+      },
+      {
+        "campo": "st_sincro_comp",
+        "tipo": "int"
+      },
+      {
+        "campo": "st_sincrosac_comp",
+        "tipo": "str"
+      },
+      {
+        "campo": "st_valor_comp",
+        "tipo": "float"
+      }
+    ]
+  },
+  {
+    "campo": "split_indisponivel",
+    "tipo": "list",
+    "exemplo": "XXX",
+    "itens_schema": []
+  }
+]

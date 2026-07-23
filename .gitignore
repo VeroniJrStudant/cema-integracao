@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Pasta local com tokens e backups — NUNCA versionar
+backup/
+backup/**
+
+# Segredos e configuração local
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+secrets/
+config.local.gs
+**/config.local.gs
+
+# Logs e temporários
+*.log
+tmp/
+temp/
+.cache/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

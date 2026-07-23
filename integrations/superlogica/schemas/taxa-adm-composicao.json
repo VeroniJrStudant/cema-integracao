@@ -1,0 +1,58 @@
+[
+  {
+    "fonte": "XXX",
+    "id_recebimento": "XXX",
+    "contrato_marcador": "XXX",
+    "cliente": "XXX",
+    "status": "XXX",
+    "dt_vencimento": "dd/mm/aaaa",
+    "dt_liquidacao": "dd/mm/aaaa",
+    "dt_competencia": "dd/mm/aaaa",
+    "produto": "XXX",
+    "valor": "XXX",
+    "complemento": "",
+    "id_produto": "XXX"
+  },
+  {
+    "fonte": "XXX",
+    "id_recebimento": "XXX",
+    "contrato_marcador": "XXX",
+    "cliente": "XXX",
+    "status": "XXX",
+    "dt_vencimento": "dd/mm/aaaa",
+    "dt_liquidacao": "dd/mm/aaaa",
+    "dt_competencia": "dd/mm/aaaa",
+    "produto": "XXX",
+    "valor": "XXX",
+    "complemento": "",
+    "id_produto": "XXX"
+  },
+  {
+    "fonte": "XXX",
+    "id_recebimento": "XXX",
+    "contrato_marcador": "XXX",
+    "cliente": "XXX",
+    "status": "XXX",
+    "dt_vencimento": "dd/mm/aaaa",
+    "dt_liquidacao": "dd/mm/aaaa",
+    "dt_competencia": "dd/mm/aaaa",
+    "produto": "XXX",
+    "valor": "XXX",
+    "complemento": "",
+    "id_produto": "XXX"
+  },
+  {
+    "fonte": "XXX",
+    "id_recebimento": "XXX",
+    "contrato_marcador": "XXX",
+    "cliente": "XXX",
+    "status": "XXX",
+    "dt_vencimento": "dd/mm/aaaa",
+    "dt_liquidacao": "dd/mm/aaaa",
+    "dt_competencia": "dd/mm/aaaa",
+    "produto": "XXX",
+    "valor": "XXX",
+    "complemento": "",
+    "id_produto": "XXX"
+  }
+]

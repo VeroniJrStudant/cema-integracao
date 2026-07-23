@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Planejamento — Integração Superlógica → Controlle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#e8f0ec',
+        primaryTextColor: '#1a2e24',
+        primaryBorderColor: '#2d6a4f',
+        lineColor: '#40916c',
+        secondaryColor: '#f4f1ea',
+        tertiaryColor: '#ffffff',
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: '14px'
+      },
+      sequence: { actorMargin: 48, messageMargin: 36 }
+    });
+  </script>
+  <style>
+    :root {
+      --ink: #1a2e24;
+      --ink-soft: #3d5248;
+      --muted: #5c6f66;
+      --paper: #f7f4ef;
+      --card: #ffffff;
+      --accent: #2d6a4f;
+      --accent-2: #40916c;
+      --line: #d8e0db;
+      --warn: #8a5a2b;
+      --ok: #1b7a4a;
+      --shadow: 0 12px 40px rgba(26, 46, 36, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, #d8ebe1 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 100% 0%, #efe6d6 0%, transparent 50%),
+        var(--paper);
+      line-height: 1.55;
+    }
+
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 28px 80px;
+    }
+
+    .hero {
+      position: relative;
+      padding: 48px 40px;
+      border-radius: 28px;
+      background:
+        linear-gradient(145deg, rgba(45, 106, 79, 0.95), rgba(27, 67, 50, 0.98)),
+        #1b4332;
+      color: #f4faf7;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 36px;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -40% 40%;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+    .hero h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      line-height: 1.15;
+      margin: 0 0 14px;
+      max-width: 18ch;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 48ch;
+      font-size: 1.05rem;
+      opacity: 0.92;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .chip {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+    }
+    .btn:hover { border-color: var(--accent-2); color: var(--accent); }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px 30px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+    section h2 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.45rem;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    section .lead {
+      color: var(--muted);
+      margin: 0 0 20px;
+      font-size: 0.98rem;
+    }
+    h3 {
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 24px 0 10px;
+    }
+    p, li { color: var(--ink-soft); }
+    ol, ul { padding-left: 1.2rem; }
+    li { margin: 6px 0; }
+    a { color: var(--accent); }
+    code {
+      font-size: 0.88em;
+      background: #eef5f1;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 720px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .hero { padding: 36px 24px; }
+      section { padding: 22px 18px; }
+    }
+
+    .card-mini {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 18px;
+      background: linear-gradient(180deg, #fbfaf8, #fff);
+    }
+    .card-mini strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+    .card-mini span { font-size: 0.9rem; color: var(--muted); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th {
+      background: #eef5f1;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .diagram {
+      margin: 8px 0 4px;
+      padding: 18px 12px;
+      border-radius: 16px;
+      background: #f8fbf9;
+      border: 1px dashed #c5d6cc;
+      overflow-x: auto;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .status-ok { background: #e4f5eb; color: var(--ok); }
+    .status-pending { background: #f7ecdf; color: var(--warn); }
+
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #eef6f1;
+      padding: 14px 16px;
+      border-radius: 0 12px 12px 0;
+      margin: 16px 0 0;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+    }
+
+    footer {
+      margin-top: 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none; }
+      .wrap { padding: 0; max-width: none; }
+      .hero, section {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      a { text-decoration: none; color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">Docs · Pasta <code style="opacity:.9">integrations/controlle</code></div>
+      <h1>Integração Superlógica → Controlle</h1>
+      <p>
+        Planejamento do envio das informações financeiras de contratos (aluguel e compra)
+        do Superlógica para o Controlle, vinculadas pelo número do contrato.
+      </p>
+      <div class="hero-meta">
+        <span class="chip">Direção: Superlógica → Controlle</span>
+        <span class="chip">Vínculo: Contrato N</span>
+        <span class="chip">Fase: desenvolvimento arquitetural</span>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <button class="btn btn-primary" type="button" onclick="window.print()">Salvar / imprimir PDF</button>
+      <a class="btn" href="../../diagrams/fluxo-integracao.drawio" download>Baixar diagrama Draw.io</a>
+      <a class="btn" href="https://app.diagrams.net/" target="_blank" rel="noopener">Abrir diagrams.net</a>
+      <a class="btn" href="../README.md">Índice docs/</a>
+      <a class="btn" href="../../README.md">README do repositório</a>
+      <a class="btn" href="../../integrations/controlle/README.md">Pasta controlle/</a>
+    </div>
+
+    <section id="contexto">
+      <h2>1. Contexto no repositório CEMA</h2>
+      <p class="lead">Este documento cobre só a fatia Controlle. As outras integrações do monorepo já têm código.</p>
+      <table>
+        <thead>
+          <tr><th>Pasta</th><th>Papel</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>integrations/superlogica/</code></td>
+            <td>Apps Script: Superlógica → Google Sheets (cobranças, contratos, taxa adm)</td>
+            <td><span class="status status-ok">implementado</span></td>
+          </tr>
+          <tr>
+            <td><code>integrations/google-sheets-automacao/</code></td>
+            <td>Apps Script: <code>extracao-contratos-196a.gs</code></td>
+            <td><span class="status status-ok">implementado</span></td>
+          </tr>
+          <tr>
+            <td><code>integrations/controlle/</code></td>
+            <td>Futuro serviço de sync Superlógica → Controlle</td>
+            <td><span class="status status-pending">desenvolvimento arquitetural</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Código da integração Controlle deve nascer em <code>integrations/controlle/</code>.
+        Não misturar com os scripts Apps Script atuais.
+      </div>
+    </section>
+
+    <section id="objetivo">
+      <h2>2. Objetivo</h2>
+      <p class="lead">Automatizar o fluxo financeiro entre os dois sistemas, sem substituir as automações de planilha atuais.</p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <strong>Superlógica Imobiliárias</strong>
+          <span>Origem — contratos, despesas e parcelas de aluguel/compra.</span>
+        </div>
+        <div class="card-mini">
+          <strong>Controlle</strong>
+          <span>Destino — lançamentos de entrada (contas a receber / receitas).</span>
+        </div>
+      </div>
+      <div class="callout">
+        Prioridade da v1: envio Superlógica → Controlle.
+        Retorno de pagamento (Controlle → Superlógica) permanece opcional.
+      </div>
+    </section>
+
+    <section id="decisoes">
+      <h2>3. Decisões confirmadas</h2>
+      <p class="lead">Alinhamentos já fechados com o negócio.</p>
+      <table>
+        <thead>
+          <tr><th>Item</th><th>Decisão</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Direção principal</td>
+            <td><strong>Superlógica → Controlle</strong> (cria cobrança/entrada)</td>
+          </tr>
+          <tr>
+            <td>Escopo</td>
+            <td>Aluguel de imóvel <strong>e</strong> compra</td>
+          </tr>
+          <tr>
+            <td>Chave de vínculo</td>
+            <td>Número do contrato (ex.: <code>Contrato 12345</code>)</td>
+          </tr>
+          <tr>
+            <td>Tokens</td>
+            <td>
+              Superlógica <span class="status status-ok">validado</span>
+              · Controlle <span class="status status-pending">disponível, não testado</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Fase atual</td>
+            <td>
+              <strong>Desenvolvimento arquitetural</strong> —
+              <code>integrations/controlle/</code> sem código de sync;
+              documentação em <code>docs/</code> e <code>diagrams/</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="fluxo">
+      <h2>4. Fluxo alvo</h2>
+      <p class="lead">Diagramas Mermaid abaixo. Versão editável: <code>diagrams/fluxo-integracao.drawio</code>.</p>
+
+      <h3>Sequência — principal e retorno opcional</h3>
+      <div class="diagram">
+        <pre class="mermaid">
+sequenceDiagram
+  participant SL as Superlogica
+  participant Sync as integrations_controlle
+  participant CT as Controlle
+
+  Note over Sync: Fluxo principal v1
+  Sync->>SL: Buscar despesas de contrato
+  Sync->>CT: Criar entrada com Contrato N
+  Sync->>Sync: Registrar vinculo despesa x lancamento
+
+  Note over Sync: Retorno opcional
+  Sync->>CT: Buscar entradas pagas com Contrato N
+  Sync->>SL: Liquidar despesa do contrato
+  Sync->>Sync: Marcar pagamento processado
+        </pre>
+      </div>
+
+      <h3>Arquitetura lógica</h3>
+      <div class="diagram">
+        <pre class="mermaid">
+flowchart LR
+  subgraph origem [Superlogica]
+    Contratos[Contratos]
+    Despesas[Despesas e parcelas]
+  end
+
+  subgraph sync [integrations_controlle]
+    JobA[Job cobrancas]
+    Store[Store de IDs]
+    JobB[Job pagamentos opcional]
+  end
+
+  subgraph destino [Controlle]
+    Entradas[Lancamentos de entrada]
+    Pagos[Entradas pagas]
+  end
+
+  Contratos --> Despesas
+  Despesas --> JobA
+  JobA --> Entradas
+  JobA --> Store
+  Pagos --> JobB
+  JobB --> Despesas
+  JobB --> Store
+        </pre>
+      </div>
+
+      <h3>Fluxo principal — Cobrança</h3>
+      <ol>
+        <li>Ler no Superlógica as despesas/parcelas de contrato (aluguel e compra).</li>
+        <li>Criar no Controlle um lançamento de <strong>entrada</strong>.</li>
+        <li>Incluir o número do contrato na descrição (<code>Contrato {n}</code>).</li>
+        <li>Guardar o vínculo (id despesa ↔ id lançamento) para não duplicar.</li>
+      </ol>
+
+      <h3>Retorno opcional — Pagamento</h3>
+      <ol>
+        <li>Listar entradas <strong>pagas</strong> no Controlle com número de contrato.</li>
+        <li>Localizar a despesa/parcela no Superlógica.</li>
+        <li>Liquidar no Superlógica e marcar o pagamento como processado.</li>
+      </ol>
+    </section>
+
+    <section id="mapeamento">
+      <h2>5. Mapeamento funcional</h2>
+      <p class="lead">Campos previstos para a sincronização principal.</p>
+
+      <h3>Superlógica → Controlle</h3>
+      <table>
+        <thead>
+          <tr><th>Origem (Superlógica)</th><th>Destino (Controlle)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Número do contrato</td><td><code>ds_transaction</code> com Contrato N</td></tr>
+          <tr><td>Valor da parcela</td><td>Valor em centavos</td></tr>
+          <tr><td>Data de vencimento</td><td>Data de vencimento do pagamento</td></tr>
+          <tr><td>Data de competência/crédito</td><td>Data de competência</td></tr>
+          <tr><td>Tipo locação vs compra</td><td>Categoria distinta + tag opcional</td></tr>
+          <tr><td>Conta padrão</td><td>Conta bancária configurada</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Endpoints previstos</h3>
+      <ul>
+        <li>Superlógica: Despesas de Contrato — listar</li>
+        <li>Controlle: Criar lançamento de entrada único</li>
+        <li>Retorno opcional: Listar lançamentos paginado + Liquidar despesa</li>
+      </ul>
+    </section>
+
+    <section id="regras">
+      <h2>6. Regras de negócio</h2>
+      <ol>
+        <li>Só sincroniza registros com número de contrato válido.</li>
+        <li>Não recria no Controlle se a despesa Superlógica já foi sincronizada.</li>
+        <li>No retorno opcional: não reliquida se o pagamento Controlle já foi processado.</li>
+        <li>Locação e compra usam categorias diferentes no Controlle.</li>
+        <li>Em erro parcial: registrar falha, seguir o lote, resumir no final.</li>
+      </ol>
+    </section>
+
+    <section id="arquitetura">
+      <h2>7. Arquitetura sugerida (futura)</h2>
+      <p class="lead">Proposta para quando houver autorização de implementação — em <code>integrations/controlle/</code>.</p>
+      <ul>
+        <li>Serviço Node.js + TypeScript</li>
+        <li>Jobs agendados (polling 15–60 min)</li>
+        <li>Store de IDs já sincronizados (idempotência)</li>
+        <li>Secrets em variáveis de ambiente (nunca no repositório; ver <code>.gitignore</code> / <code>.env.example</code>)</li>
+      </ul>
+      <div class="callout">
+        Permanecem independentes e fora deste escopo:
+        <code>integrations/superlogica/</code> e
+        <code>integrations/google-sheets-automacao/src/extracao-contratos-196a.gs</code>.
+      </div>
+    </section>
+
+    <section id="prerequisitos">
+      <h2>8. Pré-requisitos</h2>
+      <div class="grid-2">
+        <div class="card-mini">
+          <strong>Pronto</strong>
+          <span>Tokens Superlógica validados · Token Controlle disponível · Segredos fora do Git · Amostras de schema anonimizadas</span>
+        </div>
+        <div class="card-mini">
+          <strong>Pendente</strong>
+          <span>IDs de conta/categorias no Controlle · Payload de liquidação · Período inicial de sync · Retorno na v1?</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="fora">
+      <h2>9. Fora do escopo (v1)</h2>
+      <ul>
+        <li>Implementação de código em <code>integrations/controlle/</code> nesta fase</li>
+        <li>Webhooks em tempo real (fase 2; v1 = polling)</li>
+        <li>Sync de contatos, imóveis ou proprietários</li>
+        <li>Substituição da planilha 196A ou do import analítico Sheets</li>
+      </ul>
+    </section>
+
+    <section id="proximos">
+      <h2>10. Próximos passos</h2>
+      <ol>
+        <li>Validar payloads: listar despesas no Superlógica + criar entrada no Controlle.</li>
+        <li>Fechar categorias/contas no Controlle com o time financeiro.</li>
+        <li>Congelar regras de match (só contrato, ou contrato + valor + vencimento).</li>
+        <li>Decidir se o retorno de pagamento entra na v1.</li>
+        <li>Só então iniciar implementação em <code>integrations/controlle/</code>, sob pedido explícito.</li>
+      </ol>
+    </section>
+
+    <footer>
+      Cema · Planejamento Superlógica → Controlle ·
+      Fase: desenvolvimento arquitetural · Pasta alvo: integrations/controlle ·
+      Índice: docs/README.md
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "_comentario": "XXX",
+  "endpoint": "XXX",
+  "headers": {
+    "app_token": "XXX",
+    "access_token": "XXX",
+    "Content-Type": "XXX"
+  },
+  "campos_taxa_administrativa": {
+    "TX_ADM_CON": "XXX",
+    "FL_TXADMVALORFIXO_CON": 0,
+    "_significado": {
+      "TX_ADM_CON": "XXX",
+      "FL_TXADMVALORFIXO_CON": "XXX"
+    }
+  },
+  "exemplo_resposta_get": {
+    "status": 0,
+    "data": [
+      {
+        "ID_CONTRATO_CON": 0,
+        "TX_ADM_CON": "XXX",
+        "FL_TXADMVALORFIXO_CON": 0
+      }
+    ]
+  },
+  "imovel_equivalente": {
+    "TX_ADM_IMO": "XXX",
+    "FL_TXADMVALORFIXO_IMO": 0
+  },
+  "exemplo_body_put_contrato": {
+    "ID_CONTRATO_CON": 0,
+    "TX_ADM_CON": "XXX",
+    "FL_TXADMVALORFIXO_CON": 0
+  }
+}
