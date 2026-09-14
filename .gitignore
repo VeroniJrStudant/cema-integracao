@@ -16,6 +16,19 @@ secrets/
 config.local.gs
 **/config.local.gs
 
+# Crawler Playwright
+**/node_modules/
+**/storage-state.json
+**/playwright-report/
+**/test-results/
+**/blob-report/
+**/google-sa.json
+integrations/superlogica-crawler/output/
+integrations/superlogica-crawler/.auth/
+
+# Controlle sync store / dados locais
+integrations/controlle/.data/
+
 # Logs e temporários
 *.log
 tmp/

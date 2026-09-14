@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tarefas 196A — CEMA Integração</title>
+  <link rel="stylesheet" href="pdf-print.css" />
+</head>
+<body>
+  <section class="cover">
+    <div class="cover-badge">CEMA · Integração Superlógica</div>
+    <h1>Tarefas 196A</h1>
+    <p class="lead">Passos detalhados, critérios de aceite e ordem de execução. Uma task por vez. Fase B bloqueada até o GO do cliente.</p>
+    <div class="meta-row">
+      <span class="chip ok">Baseline T0–T8 feita</span>
+      <span class="chip">Agora: T18 T17 T19 T10 T20</span>
+      <span class="chip warn">Fase B blocked até T20</span>
+      <span class="chip">Atualizado 29 ago 2026</span>
+    </div>
+    <div class="cover-card">
+      <h2>Como usar este PDF</h2>
+      <ol>
+        <li>Leia a documentação irmã (PRD / Spec / ADRs) se a decisão não estiver clara.</li>
+        <li>Execute só tasks com status <code>todo</code> e dependências concluídas.</li>
+        <li>Não abra T7 nem T11–T16 sem GO em T20.</li>
+        <li>Marque aceite só quando o critério da task estiver cumprido.</li>
+      </ol>
+    </div>
+    <div class="cover-card">
+      <h2>Legenda</h2>
+      <p>Status: <code>todo</code> · <code>doing</code> · <code>done</code> · <code>blocked</code> &nbsp;|&nbsp; Tipo: docs · crawler · sheets · infra · verify · ops &nbsp;|&nbsp; Complexidade: S · M · L</p>
+    </div>
+  </section>
+
+  <div class="part">
+    <h2>Mapa e ordem</h2>
+    <p>O que já existe, o que fazer agora e o que espera o cliente.</p>
+  </div>
+
+  <div class="section">
+    <table>
+      <thead>
+        <tr><th>Bloco</th><th>IDs</th><th>Situação</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Baseline</td><td>T0–T2, T5, T6, T8</td><td>done</td></tr>
+        <tr><td>Operação Fase A</td><td>T10, T17–T20</td><td><strong>fazer agora</strong></td></tr>
+        <tr><td>Cookie (opcional)</td><td>T3, T4, T9</td><td>backlog baixo</td></tr>
+        <tr><td>Fase B GH Actions</td><td>T7, T11–T16</td><td>blocked até GO</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Ordem sugerida agora:</strong> T18 → T17 → T19 → T10 → T20</p>
+    <p><strong>Só após GO:</strong> T11 → T7 → T12 → T13 → T14 → T15 → T16</p>
+    <div class="callout">
+      Dependência-chave: T17 e T18 alimentam T20. T20 é o portão da Fase B. Sem GO, o contrato Drive/Sheets da Fase A continua valendo.
+    </div>
+  </div>
+
+  <div class="part">
+    <h2>A. Já feito — baseline</h2>
+    <p>Referência. Não refazer, salvo regressão.</p>
+  </div>
+
+  <article class="task done">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T0</p>
+        <p class="task-title">Crawler: login + MFA + filtros 196A + CSV local</p>
+      </div>
+      <span class="chip ok">done · crawler · L</span>
+    </div>
+    <p>Playwright em <code>integrations/superlogica-crawler</code>. Período = mês anterior. Download pelo histórico/impressões. Upload Drive com service account + Unidade compartilhada.</p>
+    <p class="small">Aceite já cumprido: CSV do mês em <code>output/</code> após <code>PLAYWRIGHT_HEADED=true npm run crawl</code>.</p>
+  </article>
+
+  <article class="task done">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T0b / T1 / T2</p>
+        <p class="task-title">Parser 196A, PRD/Spec/ADRs e READMEs apontando para docs/</p>
+      </div>
+      <span class="chip ok">done · sheets/docs · S–M</span>
+    </div>
+    <p><code>extracao-contratos-196a.gs</code> lê aba <code>196A*</code>. Documentação consolidada em <code>docs/196a-integracao/</code>. READMEs do crawler, Sheets e raiz reorganizados em 12/08/2026.</p>
+  </article>
+
+  <article class="task done">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T5 / T6 / T8</p>
+        <p class="task-title">CSV no Drive, download por id_impressao, import Apps Script</p>
+      </div>
+      <span class="chip ok">done · crawler/sheets · M</span>
+    </div>
+    <ul class="compact">
+      <li>T5 — arquivo do mês na pasta Shared Drive; encoding preservado.</li>
+      <li>T6 — download estável via <code>id</code> da impressão (<code>baixar=1</code> / <code>documentos/download</code>).</li>
+      <li>T8 — import para <code>196A*</code>; sucesso → lixeira; falha → <code>execucoes-com-erro</code>; acionador 15 min + menu manual.</li>
+    </ul>
+  </article>
+
+  <div class="part">
+    <h2>B. Fazer agora — Fase A</h2>
+    <p>Fechamento operacional. Ordem: T18 → T17 → T19 → T10 → T20.</p>
+  </div>
+
+  <article class="task">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T18</p>
+        <p class="task-title">Garantir dois .gs no Apps Script e os dois menus</p>
+      </div>
+      <span class="chip">todo · sheets · S</span>
+    </div>
+    <p><strong>Por quê.</strong> Dois <code>onOpen</code> se sobrescrevem. Sem o menu correto, o financeiro não importa por período (API) nem o CSV do Drive.</p>
+    <p><strong>Dependências:</strong> T8 (done).</p>
+    <h4>Passos</h4>
+    <ol class="steps">
+      <li>Abrir a planilha de produção e Extensões → Apps Script.</li>
+      <li>Confirmar que existem <strong>dois</strong> arquivos: <code>superlogica-cobrancas-analitico.gs</code> e <code>extracao-contratos-196a.gs</code>.</li>
+      <li>No analítico, manter o único <code>onOpen</code>. Ele deve chamar também <code>criarMenuAutomacoes196A_()</code>.</li>
+      <li>No arquivo 196A, <strong>não</strong> deixar um segundo <code>onOpen</code>. Se existir, remover ou comentar.</li>
+      <li>Salvar, fechar a planilha, reabrir. Autorizar Drive + Sheets se o Google pedir.</li>
+      <li>Conferir a barra de menus: <strong>Superlógica Analítico</strong> e <strong>Automações Privadas</strong>.</li>
+      <li>Smoke test 1: menu analítico → Importar por período (usa <code>access_token</code>). Não precisa importar o mês inteiro se já estiver atual; basta o menu abrir e a função existir.</li>
+      <li>Smoke test 2: Automações Privadas → importar CSV Drive (ou “Instalar acionador Drive 15 min” se ainda não existir).</li>
+    </ol>
+    <div class="callout-ok">
+      <strong>Aceite:</strong> os dois menus visíveis; Importar por período e Importar CSV Drive funcionam; um único <code>onOpen</code>.
+    </div>
+  </article>
+
+  <article class="task">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T17</p>
+        <p class="task-title">Runbook operacional Fase A (mensal)</p>
+      </div>
+      <span class="chip">todo · ops · S</span>
+    </div>
+    <p><strong>Por quê.</strong> A Opção 1 já roda, mas o cliente precisa de um checklist único: o que clicar, o que conferir e o que fazer quando o CSV cai na pasta de erro.</p>
+    <p><strong>Dependências:</strong> T5, T8 (done). <strong>Dono:</strong> operação CEMA + docs.</p>
+    <h4>Passos — escrever e validar o runbook</h4>
+    <ol class="steps">
+      <li>Criar (ou atualizar) um checklist de uma página com os passos abaixo. Pode viver no README do crawler + Sheets e neste PDF.</li>
+      <li>Validar o checklist com uma execução real do mês vigente (ou do mês anterior, se for o ciclo).</li>
+      <li>Incluir o caminho de erro: CSV em <code>execucoes-com-erro</code> → não extrair contratos → abrir o arquivo → anotar o motivo → recolocar CSV corrigido na pasta raiz.</li>
+      <li>Definir quem executa no Mac e quem confere a planilha.</li>
+    </ol>
+    <h4>Checklist mensal (conteúdo do runbook)</h4>
+    <ol class="steps">
+      <li>No Mac, pasta <code>integrations/superlogica-crawler</code>. Conferir <code>.env</code> com <code>DRIVE_UPLOAD=true</code> e <code>DRIVE_FOLDER_ID</code>.</li>
+      <li>Rodar <code>PLAYWRIGHT_HEADED=true npm run crawl</code>. Completar MFA se a sessão <code>.auth/storage-state.json</code> tiver expirado.</li>
+      <li>Conferir: CSV em <code>output/</code> e o mesmo arquivo na pasta Shared Drive <code>196a-automacao-superlogica-controller</code>.</li>
+      <li>Não converter o CSV em Planilha Google.</li>
+      <li>Esperar até 15 minutos o acionador — ou usar o menu Automações Privadas → importar agora.</li>
+      <li>Abrir a aba cujo nome começa com <code>196A</code>. Conferir linhas, competência (mês anterior) e categoria 1.1.1.</li>
+      <li>Se a aba preencheu e o CSV sumiu da pasta (foi para a lixeira): import ok. Seguir T10 (extrair contratos).</li>
+      <li>Se o arquivo foi para <code>execucoes-com-erro</code>: parar. A aba <strong>não</strong> deve ter mudado. Investigar encoding, cabeçalho ou arquivo vazio.</li>
+      <li>Registrar data, operador e “ok / erro” numa linha de log (planilha ou doc interno).</li>
+    </ol>
+    <div class="callout-ok">
+      <strong>Aceite:</strong> checklist crawl → upload → acionador → conferir <code>196A*</code> → extrair; inclui o que fazer se o CSV for para <code>execucoes-com-erro</code>.
+    </div>
+  </article>
+
+  <article class="task">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T19</p>
+        <p class="task-title">Checklist de segredos locais</p>
+      </div>
+      <span class="chip">todo · ops · S</span>
+    </div>
+    <p><strong>Por quê.</strong> Sessão, OTP e service account não podem ir para o git. Se vazar, precisa haver rotação documentada.</p>
+    <p><strong>Dependências:</strong> T5 (done).</p>
+    <h4>Passos</h4>
+    <ol class="steps">
+      <li>Abrir <code>.gitignore</code> na raiz e no crawler. Confirmar <code>.env</code>, <code>.auth/</code>, <code>google-sa.json</code>, <code>storage-state.json</code>.</li>
+      <li>Rodar <code>git status</code> e <code>git ls-files</code> filtrando <code>.env</code>, <code>sa.json</code>, <code>storage-state</code>. Nada disso pode estar versionado.</li>
+      <li>Confirmar que a cópia operacional da service account está só em <code>integrations/superlogica-crawler/.auth/google-sa.json</code> (ou o caminho do <code>GOOGLE_APPLICATION_CREDENTIALS</code>).</li>
+      <li>Anotar o procedimento de rotação: nova senha Superlógica; novo app password / IMAP se o OTP mudar; nova chave da service account no Google Cloud + substituir o JSON; revogar a chave antiga.</li>
+      <li>Se algum segredo já foi commitado no passado, tratar como vazamento: rotacionar e limpar o histórico só com autorização explícita.</li>
+    </ol>
+    <div class="callout-ok">
+      <strong>Aceite:</strong> nenhum segredo no git; <code>.auth/</code> e <code>.env</code> no <code>.gitignore</code>; rotação documentada.
+    </div>
+  </article>
+
+  <article class="task">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T10</p>
+        <p class="task-title">Encadear ou documentar Extrair Contratos após o import</p>
+      </div>
+      <span class="chip">todo · sheets · S</span>
+    </div>
+    <p><strong>Por quê.</strong> O import enche <code>196A*</code>, mas o valor de negócio é a aba de contratos. Hoje o operador pode não saber o próximo clique.</p>
+    <p><strong>Dependências:</strong> T8 (done).</p>
+    <h4>Passos (escolher um caminho e fechar)</h4>
+    <ol class="steps">
+      <li>Abrir <code>extracao-contratos-196a.gs</code> e localizar a função de extrair contratos e o nome da aba destino.</li>
+      <li>Decidir: <strong>(A)</strong> só documentar no runbook T17 o clique manual no menu, ou <strong>(B)</strong> chamar a extração automaticamente no fim do import bem-sucedido.</li>
+      <li>Se A: escrever no runbook “após import ok, menu Automações Privadas → Extrair Contratos” e qual aba conferir.</li>
+      <li>Se B: no sucesso do import Drive, enfileirar a extração; não extrair se o arquivo foi para <code>execucoes-com-erro</code>.</li>
+      <li>Testar com um CSV conhecido: import → extração → conferir quantidade de contratos e competência.</li>
+      <li>Anotar no runbook o que fazer se a extração vier vazia (aba 196A sem detalhe, filtro errado, cabeçalho diferente).</li>
+    </ol>
+    <div class="callout-ok">
+      <strong>Aceite:</strong> depois do import ok, o operador sabe (ou o script enfileira) rodar Extrair Contratos na aba destino, sem dúvida.
+    </div>
+  </article>
+
+  <article class="task">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T20</p>
+        <p class="task-title">Validação com o cliente — Fase A ok para uso mensal?</p>
+      </div>
+      <span class="chip">todo · verify · S</span>
+    </div>
+    <p><strong>Por quê.</strong> Porta de decisão da Fase B. Sem isto, GitHub Actions não começa.</p>
+    <p><strong>Dependências:</strong> T17, T18 (e na prática T10 + T19).</p>
+    <h4>Passos — reunião / aceite</h4>
+    <ol class="steps">
+      <li>Agendar 30–45 min com o financeiro CEMA. Levar o runbook T17 e a planilha com <code>196A*</code> do último ciclo.</li>
+      <li>Demonstrar ponta a ponta: crawl (ou CSV já na pasta) → import → aba 196A → extrair contratos.</li>
+      <li>Perguntar: a Opção 1 serve para o fechamento mensal, mesmo com o Mac só no dia do crawl?</li>
+      <li>Registrar por escrito uma das três saídas:
+        <ul>
+          <li><strong>GO Fase B</strong> — automatizar dia 01 no GitHub Actions.</li>
+          <li><strong>NÃO-GO / depois</strong> — continuar Fase A; Fase B permanece blocked.</li>
+          <li><strong>Ajustes</strong> — listar o que falta na Fase A antes de novo T20.</li>
+        </ul>
+      </li>
+      <li>Se GO: decidir canal de alerta (e-mail CEMA ou Telegram) — pendência da documentação.</li>
+      <li>Atualizar o ADR-008 e o status das tasks T7 / T11–T16 (sair de blocked só com GO).</li>
+    </ol>
+    <div class="callout-ok">
+      <strong>Aceite:</strong> cliente confirma operação da Opção 1; decisão GO / NÃO-GO para Fase B registrada.
+    </div>
+    <div class="callout-warn">
+      Sem GO, não criar workflow, Dockerfile de cron, nem secrets no GitHub.
+    </div>
+  </article>
+
+  <div class="part">
+    <h2>C. Backlog — cookie / caminho B</h2>
+    <p>Não bloqueia a operação. Só se a Fase C for priorizada.</p>
+  </div>
+
+  <article class="task">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T3</p>
+        <p class="task-title">Extrair cookie CEMA (PHPSESSID, server-id, filename)</p>
+      </div>
+      <span class="chip">todo · crawler · S</span>
+    </div>
+    <p>Dependência T1. Cookie web dura ~3 dias (ADR-002). <code>server-id</code> sozinho não autentica.</p>
+    <ol class="steps">
+      <li>Logar no Superlógica no browser e abrir DevTools → Application → Cookies.</li>
+      <li>Copiar <code>PHPSESSID</code> e o host. Não versionar o valor.</li>
+      <li>Documentar validade observada e o risco de expirar no meio do acionador.</li>
+    </ol>
+    <p class="small">Aceite: cookie extraído em ambiente controlado, fora do git. Não fazer se Fase C continuar despriorizada.</p>
+  </article>
+
+  <article class="task">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T4</p>
+        <p class="task-title">Gravar cookie na planilha / Script Property</p>
+      </div>
+      <span class="chip">todo · crawler · M</span>
+    </div>
+    <p>Dependência T3. Preferir manter CSV → Drive (ADR-003).</p>
+    <ol class="steps">
+      <li>Definir propriedade (ex.: <code>W196A_COOKIE</code>) só se T3 existir.</li>
+      <li>Criar menu “Atualizar cookie” com aviso de validade curta.</li>
+      <li>Nunca logar o cookie completo no console da planilha.</li>
+    </ol>
+  </article>
+
+  <article class="task">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T9</p>
+        <p class="task-title">Apps Script UrlFetch com cookie injetado</p>
+      </div>
+      <span class="chip">todo · sheets · M</span>
+    </div>
+    <p>Dependências T4 e T6. Caminho opcional; o fluxo oficial continua CSV → Drive.</p>
+    <ol class="steps">
+      <li>Só implementar se T3/T4 forem priorizados.</li>
+      <li>Usar o id de impressão já validado no crawler (ADR-004).</li>
+      <li>Tratar 401/expiração: não sobrescrever <code>196A*</code> com HTML de login.</li>
+    </ol>
+  </article>
+
+  <div class="part">
+    <h2>D. Fase B — GitHub Actions dia 01</h2>
+    <p>Blocked até T20 = GO. Não executar estes passos agora.</p>
+  </div>
+
+  <article class="task blocked">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T11</p>
+        <p class="task-title">ADR runtime — confirmar GitHub Actions (ou alternativa)</p>
+      </div>
+      <span class="chip warn">blocked · infra · S</span>
+    </div>
+    <p><strong>Blocker:</strong> T20. Default = GitHub Actions (ADR-005). Alternativas: Render/Railway, VM free, e-mail Superlógica.</p>
+    <ol class="steps">
+      <li>Com o GO em mãos, confirmar se o cliente aceita GitHub Actions no repositório atual.</li>
+      <li>Se não aceitar: escolher a alternativa do ranking (seção 2.4 da documentação) e gravar ADR novo.</li>
+      <li>Só então liberar T7 e T12.</li>
+    </ol>
+  </article>
+
+  <article class="task blocked">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T7</p>
+        <p class="task-title">Headless confiável no CI — screenshots só em falha</p>
+      </div>
+      <span class="chip warn">blocked · crawler · S</span>
+    </div>
+    <p>Dependência T11. No Mac a Fase A usa headed. No CI precisa headless estável, MFA e timeout de download.</p>
+    <ol class="steps">
+      <li>Rodar o crawler headless numa máquina limpa (Docker local conta).</li>
+      <li>OTP: mesmo fluxo de inbox já usado localmente, via secrets — não gravar .env no runner.</li>
+      <li>Screenshots e trace só se login, filtro, export ou upload falhar.</li>
+      <li>Confirmar que mês anterior + 1.1.1 + Detalhado continuam corretos sem UI visível.</li>
+    </ol>
+  </article>
+
+  <article class="task blocked">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T12</p>
+        <p class="task-title">Dockerfile Playwright + workflow cron dia 01</p>
+      </div>
+      <span class="chip warn">blocked · infra · M</span>
+    </div>
+    <p>Dependências T7, T11, T5. Publica na <strong>mesma</strong> pasta Drive da Fase A.</p>
+    <ol class="steps">
+      <li>Dockerfile com Playwright + Chromium (imagem oficial ou equivalente).</li>
+      <li>Workflow: cron dia 01 (fuso America/Sao_Paulo) + <code>workflow_dispatch</code> para teste.</li>
+      <li>Job: checkout → instalar deps → crawl → upload Drive.</li>
+      <li>Não commitar <code>storage-state</code>; sessão nasce no job via login + OTP.</li>
+      <li>Confirmar que o Apps Script não precisa de mudança — só o arquivo novo na pasta.</li>
+    </ol>
+    <div class="callout-ok">
+      <strong>Aceite (quando desbloqueada):</strong> cron dia 01 gera CSV e envia à mesma pasta Drive, sem intervenção no Mac.
+    </div>
+  </article>
+
+  <article class="task blocked">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T13</p>
+        <p class="task-title">Secrets no GitHub</p>
+      </div>
+      <span class="chip warn">blocked · infra · S</span>
+    </div>
+    <p>Dependência T12. Superlógica, Gmail OTP e JSON da service account vão para Secrets / Variables — nunca para o notebook do runner de forma persistente.</p>
+    <ol class="steps">
+      <li>Mapear cada variável de <code>.env.example</code> para um secret.</li>
+      <li>Service account: secret do JSON ou Workload Identity, se o cliente preferir.</li>
+      <li>Restringir quem pode ver e quem pode disparar o workflow.</li>
+    </ol>
+  </article>
+
+  <article class="task blocked">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T14</p>
+        <p class="task-title">Alerta se login / OTP / CSV falhar</p>
+      </div>
+      <span class="chip warn">blocked · infra · S</span>
+    </div>
+    <p>Dependência T12. Canal a decidir no GO (e-mail CEMA ou Telegram).</p>
+    <ol class="steps">
+      <li>No <code>if: failure()</code> do workflow, enviar mensagem com data, etapa (login, OTP, export, upload) e link do run.</li>
+      <li>Não anexar senha, cookie nem CSV com dados de contratos no alerta.</li>
+      <li>Definir quem é o plantão no dia 01.</li>
+    </ol>
+  </article>
+
+  <article class="task blocked">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T15</p>
+        <p class="task-title">Runbook dia 01 (Fase B) + verificação</p>
+      </div>
+      <span class="chip warn">blocked · verify · S</span>
+    </div>
+    <p>Dependências T12 e T8.</p>
+    <ol class="steps">
+      <li>Checklist: job verde → arquivo na pasta → acionador → <code>196A*</code> → extração → log.</li>
+      <li>Plano B se o Actions falhar: voltar ao runbook da Fase A (Mac + <code>npm run crawl</code>) no mesmo dia.</li>
+      <li>Quem confere até que horas no dia 01.</li>
+    </ol>
+  </article>
+
+  <article class="task blocked">
+    <div class="task-head">
+      <div>
+        <p class="task-id">T16</p>
+        <p class="task-title">Teste ponta a ponta em staging</p>
+      </div>
+      <span class="chip warn">blocked · verify · M</span>
+    </div>
+    <p>Dependências T12, T8, T10. Não estrear em produção no primeiro dia 01.</p>
+    <ol class="steps">
+      <li>Cópia da planilha ou pasta Drive de staging.</li>
+      <li>Disparar <code>workflow_dispatch</code> apontando para a pasta de teste.</li>
+      <li>Conferir CSV → import → <code>196A*</code> → contratos, sem tocar a pasta de produção.</li>
+      <li>Só então apontar o cron para a pasta oficial.</li>
+    </ol>
+    <div class="callout-ok">
+      <strong>Aceite:</strong> E2E verde em staging (GH Actions → Drive → Sheets) antes do primeiro dia 01 real.
+    </div>
+  </article>
+
+  <div class="part">
+    <h2>E. Resumo do operador</h2>
+    <p>O que fazer neste mês, sem abrir a Fase B.</p>
+  </div>
+
+  <div class="section">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Ação</th><th>Task</th><th>Pronto quando</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Dois menus na planilha, um <code>onOpen</code></td><td>T18</td><td>Analítico + Automações Privadas visíveis</td></tr>
+        <tr><td>2</td><td>Runbook de uma página</td><td>T17</td><td>Checklist mensal validado numa run real</td></tr>
+        <tr><td>3</td><td>Segredos fora do git</td><td>T19</td><td><code>git ls-files</code> limpo + rotação anotada</td></tr>
+        <tr><td>4</td><td>Extrair contratos sem dúvida</td><td>T10</td><td>Menu documentado ou extração encadeada</td></tr>
+        <tr><td>5</td><td>Perguntar GO / NÃO-GO ao cliente</td><td>T20</td><td>Decisão escrita; Fase B só se GO</td></tr>
+      </tbody>
+    </table>
+    <div class="callout-danger">
+      T3, T4, T9 (cookie) e T7, T11–T16 (Actions) não entram nesta sprint.
+    </div>
+  </div>
+
+  <p class="footer-note">CEMA Integração · Tarefas 196A · Fonte: docs/196a-integracao · 29 ago 2026</p>
+</body>
+</html>

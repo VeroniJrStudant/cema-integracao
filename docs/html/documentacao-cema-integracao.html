@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Documentação CEMA — Aplicação Superlógica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#e8f0ec',
+        primaryTextColor: '#1a2e24',
+        primaryBorderColor: '#2d6a4f',
+        lineColor: '#40916c',
+        secondaryColor: '#f4f1ea',
+        tertiaryColor: '#ffffff',
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: '14px'
+      },
+      sequence: { actorMargin: 48, messageMargin: 36 }
+    });
+  </script>
+  <style>
+:root {
+  --ink: #1a2e24;
+  --ink-soft: #3d5248;
+  --muted: #5c6f66;
+  --paper: #f7f4ef;
+  --card: #ffffff;
+  --accent: #2d6a4f;
+  --accent-2: #40916c;
+  --line: #d8e0db;
+  --warn: #8a5a2b;
+  --ok: #1b7a4a;
+  --danger: #9b2c2c;
+  --shadow: 0 12px 40px rgba(26, 46, 36, 0.08);
+  --sidebar-w: 300px;
+  --page-zoom: 1;
+  --content-max: none;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, #d8ebe1 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, #efe6d6 0%, transparent 50%),
+    var(--paper);
+  line-height: 1.55;
+}
+.layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  min-height: 100vh;
+  transform: scale(var(--page-zoom));
+  transform-origin: top left;
+  width: calc(100% / var(--page-zoom));
+}
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, #1b4332 0%, #143528 100%);
+  color: #e8f0ec;
+  border-right: 1px solid rgba(255,255,255,.08);
+  z-index: 40;
+}
+.sidebar-head {
+  flex: 0 0 auto;
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.sidebar-brand-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.sidebar-brand .eyebrow {
+  display: block;
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  opacity: .62;
+  margin-bottom: 7px;
+  font-weight: 600;
+}
+.sidebar-brand h1 {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.12rem;
+  margin: 0 0 6px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #fff;
+}
+.sidebar-brand p {
+  margin: 0;
+  font-size: 12px;
+  opacity: .68;
+  line-height: 1.4;
+}
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  flex: 0 0 auto;
+  margin-top: -2px;
+  color: rgba(232,240,236,.72);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn-icon:hover {
+  color: #fff;
+  background: rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.18);
+}
+.btn-icon svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+.page-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+.tool-group {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(0,0,0,.22);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 9px;
+}
+.tool-group button {
+  flex: 1;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: rgba(232,240,236,.72);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  padding: 7px 8px;
+  cursor: pointer;
+}
+.tool-group button:hover {
+  color: #fff;
+  background: rgba(255,255,255,.08);
+}
+.tool-group button.active {
+  color: #fff;
+  background: rgba(64,145,108,.55);
+}
+.tool-group .tool-value {
+  flex: 0 0 48px;
+  color: rgba(255,255,255,.9);
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 10px 10px 18px;
+}
+.sidebar-nav a {
+  display: block;
+  color: rgba(232,240,236,.88);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+.sidebar-nav a:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+.sidebar-nav a.active {
+  background: rgba(64,145,108,.35);
+  border-color: rgba(149,213,178,.35);
+  color: #fff;
+  font-weight: 600;
+}
+.nav-group { margin-top: 8px; }
+.nav-group-title {
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .55;
+  font-weight: 700;
+  padding: 10px 12px 6px;
+}
+.nav-group .sub a {
+  font-size: 12.5px;
+  padding: 6px 12px 6px 18px;
+  opacity: .92;
+}
+.sidebar-footer {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 12px 18px 16px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  font-size: 11px;
+  opacity: .55;
+}
+.sidebar-footer a { color: #95d5b2; }
+.main { min-width: 0; padding: 28px 32px 80px; }
+.wrap { max-width: var(--content-max); margin: 0 auto; width: 100%; }
+.topbar-mobile {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 16px;
+  align-items: center;
+  gap: 12px;
+}
+body.nav-hidden .layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+body.nav-hidden .sidebar { display: none; }
+body.nav-hidden .main { padding-left: 72px; }
+.btn-show-nav {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 60;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #f4faf7;
+  background: #1b4332;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(26, 46, 36, .22);
+  cursor: pointer;
+}
+body.nav-hidden .btn-show-nav { display: inline-flex; }
+.btn-show-nav:hover { background: #245c44; }
+.btn-show-nav svg { width: 18px; height: 18px; display: block; }
+.topbar-mobile button {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: inherit;
+}
+.topbar-mobile strong { font-size: 14px; color: var(--ink); }
+.hero {
+  position: relative;
+  padding: 40px 36px;
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(45,106,79,.95), rgba(27,67,50,.98)), #1b4332;
+  color: #f4faf7;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 28px;
+  scroll-margin-top: 16px;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -20% -40% 40%;
+  height: 220px;
+  background: radial-gradient(circle, rgba(255,255,255,.12), transparent 70%);
+  pointer-events: none;
+}
+.eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .85;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+.hero h1 {
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.55rem, 3.2vw, 2.2rem);
+  line-height: 1.15;
+  margin: 0 0 14px;
+  max-width: 28ch;
+  position: relative;
+  z-index: 1;
+}
+.hero p { margin: 0; max-width: 58ch; opacity: .92; font-size: 1.02rem; position: relative; z-index: 1; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; position: relative; z-index: 1; }
+.chip {
+  font-size: 12px; font-weight: 600; padding: 8px 12px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+}
+.card, .section, .toc, .card-mini {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+.part {
+  margin: 40px 0 18px;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: #e8f0ec;
+  border: 1px solid #c5d9ce;
+  scroll-margin-top: 20px;
+}
+.part h2 {
+  font-family: Fraunces, Georgia, serif;
+  margin: 0 0 6px;
+  font-size: 1.45rem;
+  color: var(--accent);
+}
+.part p { margin: 0; color: var(--muted); font-size: .95rem; }
+.section {
+  padding: 28px 30px;
+  margin-bottom: 22px;
+  scroll-margin-top: 20px;
+}
+.section > h2, .section > h3:first-child {
+  font-family: Fraunces, Georgia, serif;
+  margin-top: 0;
+  color: var(--accent);
+}
+.section h2 { font-size: 1.35rem; scroll-margin-top: 20px; }
+.section h3 { font-size: 1.1rem; color: var(--ink-soft); margin-top: 1.4em; scroll-margin-top: 20px; }
+.section h4 { margin-top: 1.2em; color: var(--ink-soft); }
+section[id] { scroll-margin-top: 20px; }
+.lead { color: var(--ink-soft); font-size: 1.02rem; }
+.muted { color: var(--muted); }
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.card-mini {
+  padding: 16px 18px;
+  border-radius: 16px;
+}
+.card-mini strong { display: block; margin-bottom: 6px; color: var(--accent); }
+.card-mini span { color: var(--ink-soft); font-size: .92rem; }
+.callout, .callout-warn, .callout-ok {
+  border-left: 4px solid var(--accent-2);
+  background: #f0f7f3;
+  padding: 12px 16px;
+  border-radius: 0 12px 12px 0;
+  margin: 16px 0;
+}
+.callout.warn, .callout-warn { border-left-color: var(--warn); background: #faf4ec; }
+.callout.danger { border-left-color: var(--danger); background: #faf0f0; }
+.callout-ok { border-left-color: var(--ok); }
+table {
+  width: 100%; border-collapse: collapse; font-size: .92rem; margin: 14px 0 8px;
+}
+th, td {
+  border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top;
+}
+th { background: #eef5f1; font-weight: 600; }
+code, pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .86rem;
+}
+code { background: #eef2ef; padding: 2px 6px; border-radius: 6px; }
+pre {
+  background: #1a2e24; color: #e8f0ec; padding: 14px 16px; border-radius: 14px;
+  overflow-x: auto; line-height: 1.45;
+}
+pre code { background: transparent; color: inherit; padding: 0; }
+.mermaid, .diagram {
+  background: #fbfcfa;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+.diagram { background: transparent; border: 0; padding: 0; box-shadow: none; }
+.mermaid svg { max-width: 100%; height: auto; }
+.footer {
+  margin-top: 40px; color: var(--muted); font-size: .9rem; text-align: center;
+}
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(26,46,36,.45);
+  z-index: 35;
+}
+body.sidebar-open .overlay { display: block; }
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .topbar-mobile { display: flex; }
+  body.nav-hidden .btn-show-nav { display: none; }
+  body.nav-hidden .main { padding-left: 16px; }
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    transform: translateX(-105%);
+    transition: transform .22s ease;
+    width: min(86vw, 320px);
+  }
+  body.sidebar-open .sidebar { transform: translateX(0); }
+  .main { padding: 18px 16px 64px; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+@media print {
+  .sidebar, .topbar-mobile, .overlay, .btn-show-nav { display: none !important; }
+  .layout { display: block; }
+  .section, .part { break-inside: avoid; box-shadow: none; }
+}
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" hidden></div>
+  <button type="button" id="btn-show-nav" class="btn-show-nav" title="Mostrar menu" aria-label="Mostrar menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+      <path d="M9 4v16"></path>
+    </svg>
+  </button>
+  <div class="topbar-mobile">
+    <button type="button" id="btn-menu" aria-label="Abrir índice">☰ Índice</button>
+    <strong>Documentação CEMA</strong>
+  </div>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar" aria-label="Índice da documentação">
+      <div class="sidebar-head">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-row">
+            <div>
+              <span class="eyebrow">CEMA Integração</span>
+              <h1>Documentação da aplicação</h1>
+            </div>
+            <button type="button" id="btn-hide-nav" class="btn-icon" title="Esconder menu" aria-label="Esconder menu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                <path d="M9 4v16"></path>
+                <path d="M16 9l-3 3 3 3"></path>
+              </svg>
+            </button>
+          </div>
+          <p>Superlógica · Crawler · Sheets · Controlle</p>
+        </div>
+        <div class="page-tools" aria-label="Controles da página">
+          <div class="tool-group" role="group" aria-label="Zoom">
+            <button type="button" id="btn-zoom-out" title="Diminuir">A−</button>
+            <button type="button" id="btn-zoom-label" class="tool-value" title="Resetar zoom">100%</button>
+            <button type="button" id="btn-zoom-in" title="Aumentar">A+</button>
+          </div>
+          <div class="tool-group" role="group" aria-label="Largura">
+            <button type="button" id="btn-width-browser" class="active" title="Usar toda a largura do browser">Largura</button>
+            <button type="button" id="btn-width-read" title="Coluna de leitura">Leitura</button>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav" id="doc-nav">
+        <a href="#topo" data-nav>Início</a>
+
+        <div class="nav-group">
+          <div class="nav-group-title">0 · Metodologia</div>
+          <a href="#part-metodologia" data-nav>Pedro Nauck</a>
+          <div class="sub">
+            <a href="#sec-nauk" data-nav>Análise CompozyOS</a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">1 · Crawler</div>
+          <a href="#part-crawler" data-nav>Planejamento Crawler</a>
+          <div class="sub">
+            <a href="#sec-crawler-problema" data-nav>Problema</a>
+            <a href="#sec-crawler-estrategia" data-nav>Estratégia</a>
+            <a href="#sec-crawler-comparativo" data-nav>Comparativo</a>
+            <a href="#sec-crawler-recomendacao" data-nav>Recomendação MFA</a>
+            <a href="#sec-crawler-arquitetura" data-nav>Arquitetura alvo</a>
+            <a href="#sec-crawler-riscos" data-nav>Riscos</a>
+            <a href="#sec-crawler-checklist" data-nav>Checklist</a>
+            <a href="#sec-crawler-proximos" data-nav>Próximos passos</a>
+            <a href="#sec-crawler-decisao" data-nav>Registro de decisão</a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">2 · Google Sheets</div>
+          <a href="#part-sheets" data-nav>Guia Sheets</a>
+          <div class="sub">
+            <a href="#sec-sheets-objetivo" data-nav>Objetivo</a>
+            <a href="#sec-sheets-setup" data-nav>Setup</a>
+            <a href="#sec-sheets-abas" data-nav>Abas geradas</a>
+            <a href="#sec-sheets-fluxo" data-nav>Fluxo Taxa Adm</a>
+            <a href="#sec-sheets-regras" data-nav>Regras</a>
+            <a href="#sec-sheets-config" data-nav>CONFIG</a>
+            <a href="#sec-sheets-schemas" data-nav>Schemas</a>
+            <a href="#sec-sheets-operacao" data-nav>Operação diária</a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">3 · Controlle</div>
+          <a href="#part-controlle" data-nav>Planejamento Controlle</a>
+          <div class="sub">
+            <a href="#sec-controlle-contexto" data-nav>Contexto</a>
+            <a href="#sec-controlle-objetivo" data-nav>Objetivo</a>
+            <a href="#sec-controlle-decisoes" data-nav>Decisões</a>
+            <a href="#sec-controlle-fluxo" data-nav>Fluxo alvo</a>
+            <a href="#sec-controlle-mapeamento" data-nav>Mapeamento</a>
+            <a href="#sec-controlle-regras" data-nav>Regras</a>
+            <a href="#sec-controlle-arquitetura" data-nav>Arquitetura</a>
+            <a href="#sec-controlle-prerequisitos" data-nav>Pré-requisitos</a>
+            <a href="#sec-controlle-fora" data-nav>Fora do escopo</a>
+            <a href="#sec-controlle-proximos" data-nav>Próximos passos</a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">Relacionados</div>
+          <a href="../196a-integracao/documentacao-196a-integracao.md">Doc 196A (.md)</a>
+          <a href="../referencia-pedro-nauk.md">Referência Nauck (.md)</a>
+          <a href="../README.md">Índice docs/</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">Menu lateral · CEMA 2026</div>
+    </aside>
+
+    <main class="main">
+      <div class="wrap" id="doc-html-consolidado">
+
+    <header class="hero" id="topo">
+      <div class="eyebrow">CEMA Integração · Documentação consolidada</div>
+      <h1>Documentação CEMA — Superlógica (consolidado)</h1>
+      <p>Um único documento para leitura e análise: metodologia Nauck + planejamentos Crawler, Sheets e Controlle.</p>
+      <div class="hero-meta"><span class="chip">Pedro Nauck</span><span class="chip">Crawler</span><span class="chip">Google Sheets</span><span class="chip">Controlle</span><span class="chip">Mermaid</span></div>
+    </header>
+
+    
+
+    
+
+    
+<div class="part" id="part-metodologia">
+  <h2>0. Metodologia Pedro Nauck</h2>
+  <p>Pipeline Idea → TechSpec → Tasks → memória Markdown. Base para organizar o restante desta documentação.</p>
+</div>
+<section class="section" id="sec-nauk">
+<h2>Análise — Pedro Nauck / CompozyOS</h2>
+<p><em>Data:</em> 11 ago 2026  </p>
+<p><em>Vídeo:</em> <a href="https://www.youtube.com/watch?v=D2zMsqmEuiY">CompozyOS, um sistema operacional para agentes!</a>  </p>
+<p><em>Autor:</em> <a href="https://github.com/pedronauck">Pedro Nauck</a> · <a href="https://compozy.com">compozy.com</a>  </p>
+<p><em>Nota:</em> a live não tinha legendas/captions públicas no momento da análise; o conteúdo abaixo vem do tema declarado do vídeo + docs/repo oficiais (CompozyOS v0.3 beta + skills do Pedro).</p>
+<h3>1. O que ele está apresentando</h3>
+<p><em>CompozyOS</em> = um “sistema operacional” local-first para trabalho com agentes de IA.</p>
+<p>A tese central (e o que a live vende):</p>
+<p>Qualquer um consegue promptar um agente. Fazer agentes trabalharem <em>de forma contínua</em> ainda é engenharia: loops, triggers, cron, memória, permissões, approvals, observabilidade e cola entre ferramentas. O CompozyOS transforma esse stack inteiro em <em>um produto</em>.</p>
+<p>Em vez de você montar scripts + MCP + filas + memória à mão, o daemon local vira a fonte da verdade: sessions, tasks, loops, memory, permissions, automation e tools.</p>
+<p>Fontes: <a href="https://compozy.com">compozy.com</a> · <a href="https://github.com/compozy/compozy">github.com/compozy/compozy</a></p>
+<h3>2. Stack técnico (o que ele usa de verdade)</h3>
+<h4>Runtime / produto</h4>
+<table>
+<tr><th>Camada</th><th>Tecnologia</th></tr>
+<tr><td>Core / daemon / CLI</td><td><em>Go</em> (binary único, local-first)</td></tr>
+<tr><td>Persistência local</td><td><em>SQLite</em> (<code>modernc.org/sqlite</code>) + event store</td></tr>
+<tr><td>Frontend / shell web</td><td><em>Bun</em> + <em>Vite</em> (monorepo Go+Bun)</td></tr>
+<tr><td>Config</td><td><em>TOML</em> (<code>~/.compozy/config.toml</code> + <code>.compozy/config.toml</code>)</td></tr>
+<tr><td>Artefatos de workflow</td><td><em>Markdown + YAML frontmatter</em></td></tr>
+<tr><td>Agent protocol</td><td><em>ACP</em> (<code>coder/acp-go-sdk</code>) — Claude Code, Codex, Cursor, Gemini, OpenCode, etc.</td></tr>
+<tr><td>Extensões / tools</td><td><em>MCP</em> (<code>modelcontextprotocol/go-sdk</code>)</td></tr>
+<tr><td>Automação</td><td><em>Cron</em> (<code>robfig/cron</code>, <code>gocron</code>) + webhooks</td></tr>
+<tr><td>HTTP API do daemon</td><td><em>Gin</em></td></tr>
+<tr><td>TUI</td><td><em>Bubbletea / Bubbles</em> (Charm)</td></tr>
+<tr><td>Extensões SDK</td><td><code>@compozy/extension-sdk</code> (npm) + <code>sdk/go</code></td></tr>
+<tr><td>Sandbox opcional</td><td><em>Daytona</em> SDK</td></tr>
+<tr><td>Distribuição</td><td>installer Sigstore, npm <code>@compozy/cli@beta</code>, Go install</td></tr>
+</table>
+<h4>Libs Go relevantes (do <code>go.mod</code>)</h4>
+<ul>
+<li>Orquestração / estado: <code>looplab/fsm</code>, <code>go.etcd.io/bbolt</code>, SQLite</li>
+<li>CLI: <code>spf13/cobra</code>, Charm Bubbletea</li>
+<li>Agentes: <code>coder/acp-go-sdk</code>, MCP Go SDK</li>
+<li>Schema / config: <code>kin-openapi</code>, <code>pelletier/go-toml</code>, <code>goccy/go-yaml</code>, CEL (<code>google/cel-go</code>)</li>
+<li>Migrations: <code>pressly/goose</code>, Atlas</li>
+<li>Auth / crypto: JWT, keyring, Sigstore, Tailscale</li>
+</ul>
+<h4>Agentes que ele pluga (não reinventa o modelo)</h4>
+<p>Claude Code · Codex · Cursor (<code>cursor-agent acp</code>) · Gemini CLI · OpenCode · Copilot CLI · Devin · Droid · Pi · Kiro — via ACP.</p>
+<h4>Ecossistema paralelo: skills</h4>
+<p>Repo <a href="https://github.com/pedronauck/skills">pedronauck/skills</a> (~132 skills):</p>
+<pre><code>npx skills add https://github.com/pedronauck/skills</code></pre>
+<p>Buckets: <code>mine</code> (originais), <code>curated</code>, <code>marketing</code>, <code>community</code>.  </p>
+<p>Spec: <a href="https://agentskills.io">agentskills.io</a> — cada skill = pasta com <code>SKILL.md</code>.</p>
+<p>Stack de <em>dev frontend</em> que aparece nas skills dele (o que ele otimiza o agente para usar):</p>
+<ul>
+<li>React 19 + React Compiler</li>
+<li>TypeScript avançado</li>
+<li>TanStack (Query / Router / Form)</li>
+<li>Tailwind v4 + shadcn</li>
+<li>Zustand / Zod / XState store</li>
+<li>Vitest + Storybook</li>
+<li>Drizzle (migrations safe)</li>
+<li>Go (golang-master, bubbletea)</li>
+</ul>
+<h3>3. Arquitetura mental do CompozyOS</h3>
+<div class="mermaid">
+flowchart TB
+  subgraph Surfaces[Superfícies de controle]
+    CLI[CLI compozy]
+    WEB[Web Shell]
+    MCP[MCP / HTTP / UDS]
+  end
+
+  subgraph Daemon[Daemon local ~/.compozy]
+    SESS[Sessions]
+    TASK[Tasks + Claim/Lease]
+    LOOP[Loops]
+    MEM[Memory Markdown]
+    AUTO[Cron + Webhooks]
+    PERM[Permissions + Approvals]
+    NET[Compozy Network v0]
+  end
+
+  subgraph Agents[Agentes ACP]
+    CC[Claude Code]
+    CX[Codex]
+    CUR[Cursor]
+    GM[Gemini / outros]
+  end
+
+  WS[Workspace do repo]
+
+  CLI --> Daemon
+  WEB --> Daemon
+  MCP --> Daemon
+  Daemon --> Agents
+  Daemon --> WS
+  Agents --> WS
+  MEM -.->|Markdown tipado| WS
+</div>
+<h4>Conceitos-chave</h4>
+<ol>
+<li><em>Daemon dono do estado</em> — fechar o terminal não mata o trabalho; session é durável.</li>
+<li><em>Tasks com claim/lease</em> — fila compartilhada humano↔️agente; heartbeat; sem double-execution.</li>
+<li><em>Memory ≠ vector DB</em> — arquivos Markdown tipados (<code>user</code>, <code>feedback</code>, <code>project</code>, <code>reference</code>) + “dream consolidation”.</li>
+<li><em>Skills / hooks / extensions</em> — contratos em arquivo (SKILL.md, TOML hooks), não plugin spaghetti.</li>
+<li><em>Compozy Network</em> — peers Live trocam <code>greet/whois/say/capability/receipt/trace</code>.</li>
+<li><em>Bridges</em> — Slack, Discord, Telegram, WhatsApp, Teams, GitHub, Linear… webhook → session.</li>
+</ol>
+<h3>4. Estratégia de aceleração (o que vale copiar no nosso fluxo)</h3>
+<p>Independente de adotar o CompozyOS inteiro agora, a <em>estratégia</em> do Pedro é o ouro:</p>
+<h4>A. Pipeline Idea → código (não “um prompt gigante”)</h4>
+<p>Fases com artefatos Markdown versionáveis:</p>
+<ol>
+<li>Idea / PRD  </li>
+<li>TechSpec + ADRs  </li>
+<li>Tasks com frontmatter (<code>status</code>, <code>type</code>, <code>complexity</code>, <code>dependencies</code>)  </li>
+<li>Execução por task (com memória entre tasks)  </li>
+<li>Review → fix → verify  </li>
+</ol>
+<p><em>Aproveitar já no Cursor:</em> forçar artefatos intermediários (PRD curto → techspec → lista de tasks) antes de pedir implementação.</p>
+<h4>B. Skills como “biblioteca de expertise”</h4>
+<p>Em vez de reescrever regras no chat, instalar skills de domínio:</p>
+<table>
+<tr><th>Objetivo</th><th>Skills úteis do Pedro</th></tr>
+<tr><td>React/TS rápido e limpo</td><td><code>react</code>, <code>typescript-advanced</code>, <code>tanstack</code>, <code>tailwindcss</code></td></tr>
+<tr><td>Menos slop de IA</td><td><code>deslop</code>, <code>ui-craft</code>, <code>no-workarounds</code></td></tr>
+<tr><td>Qualidade / ship</td><td><code>testing-boss</code>, <code>ship-pr</code>, <code>verification-before-completion</code></td></tr>
+<tr><td>Debug sério</td><td><code>systematic-debugging</code> (curated)</td></tr>
+<tr><td>Docs atualizadas de libs</td><td><code>context7</code></td></tr>
+<tr><td>Spec antes de código</td><td><code>brainstorming</code>, <code>creating-spec</code>, <code>requirements-clarity</code></td></tr>
+</table>
+<h4>C. Multi-agente com papéis (não 3 chats iguais)</h4>
+<p>Padrão dele:</p>
+<ul>
+<li><em>Implementer</em> faz a task  </li>
+<li><em>Peer review</em> com outro modelo (<code>impl-peer-review</code> / <code>spec-peer-review</code>)  </li>
+<li><em>Auditor</em> independente (<code>agent-output-audit</code>, <code>deep-review</code>)  </li>
+<li>Controller orquestra (<code>herdr-orchestration</code> / Compozy Network)</li>
+</ul>
+<p><em>Aproveitar já:</em> no Cursor, separar “implementar” de “revisar” (outra sessão / outro modelo) com brief via skill <code>to-prompt</code>.</p>
+<h4>D. Memória de projeto como arquivos</h4>
+<p>Context que sobrevive entre sessões = Markdown no repo (decisões, padrões, checklists), não só histórico do chat.</p>
+<p><em>Aproveitar já:</em> <code>AGENTS.md</code> / regras Cursor + pasta <code>docs/</code> de decisões; skill <code>writing-agents-md</code>.</p>
+<h4>E. Daemon / runtime contínuo (quando fizer sentido)</h4>
+<p>Quando o gargalo for “agente para quando fecha o terminal” ou “quero cron + webhook + fila”:</p>
+<pre><code>curl -fsSL https://compozy.com/install.sh | sh
+compozy daemon start
+compozy session new --agent general --name first-run</code></pre>
+<p>Beta v0.3 — avaliar com calma; v0.2 está em legacy.</p>
+<h3>5. Plano prático para acelerar seu desenvolvimento</h3>
+<p>Prioridade do que traz ROI rápido <em>sem</em> migrar tudo:</p>
+<table>
+<tr><th>Prioridade</th><th>Ação</th><th>Esforço</th></tr>
+<tr><td>P0</td><td>Instalar skills do Pedro no Cursor/Claude (<code>npx skills add pedronauck/skills</code>) e ativar subset: react, tanstack, deslop, no-workarounds, testing-boss</td><td>baixo</td></tr>
+<tr><td>P0</td><td>Adotar pipeline markdown: PRD → techspec → tasks com status</td><td>baixo</td></tr>
+<tr><td>P1</td><td>Ritual de ship: <code>ship-pr</code> + review cruzado antes de merge</td><td>baixo</td></tr>
+<tr><td>P1</td><td><code>AGENTS.md</code> enxuto por repo (skill <code>writing-agents-md</code>)</td><td>baixo</td></tr>
+<tr><td>P2</td><td>Experimentar CompozyOS em 1 projeto piloto (daemon + 1 session)</td><td>médio</td></tr>
+<tr><td>P2</td><td>Loops: task queue com verificação (<code>cy-final-verify</code> mindset)</td><td>médio</td></tr>
+<tr><td>P3</td><td>Bridges / Network / multi-agent paralelo em produção</td><td>alto</td></tr>
+</table>
+<h4>Anti-padrões que o material dele combate</h4>
+<ul>
+<li>Prompt único “faz o app” sem artefatos  </li>
+<li>Aceitar workaround em vez de root cause (<code>no-workarounds</code>)  </li>
+<li>Commitar slop de IA (<code>deslop</code>)  </li>
+<li>Testes cosméticos / mocks que escondem integração (<code>testing-boss</code>, <code>agent-output-audit</code>)  </li>
+<li>Memória só no chat (some no próximo dia)</li>
+</ul>
+<h3>6. Links úteis</h3>
+<table>
+<tr><th>Recurso</th><th>URL</th></tr>
+<tr><td>Live</td><td>https://www.youtube.com/watch?v=D2zMsqmEuiY</td></tr>
+<tr><td>Site</td><td>https://compozy.com</td></tr>
+<tr><td>Repo CompozyOS</td><td>https://github.com/compozy/compozy</td></tr>
+<tr><td>Skills do Pedro</td><td>https://github.com/pedronauck/skills</td></tr>
+<tr><td>GitHub Pedro</td><td>https://github.com/pedronauck</td></tr>
+<tr><td>Spec de skills</td><td>https://agentskills.io</td></tr>
+</table>
+<h3>7. Resumo em uma frase</h3>
+<p>Pedro não está vendendo “mais um chatbot”: está vendendo <em>infraestrutura de trabalho contínuo com agentes</em> (daemon + memória + fila + skills + multi-agente ACP) — e a parte que você pode roubar amanhã é o <em>pipeline markdown + skills especializadas + review cruzado</em>, antes mesmo de instalar o CompozyOS.</p>
+</section>
+
+
+<div class="part" id="part-crawler">
+  <h2>1 — Planejamento Crawler Superlógica</h2>
+  <p>Escolha de tecnologia, MFA, arquitetura alvo e riscos. Fonte original: <code>planejamento-crawler-superlogica.html</code></p>
+</div>
+<section class="section" id="sec-crawler">
+<section id="sec-crawler-problema">
+      <h2>1. Qual problema estamos resolvendo?</h2>
+      <p class="lead">
+        Hoje o repositório já extrai cobranças, contratos e taxa adm via API REST
+        (<code>app_token</code> + <code>access_token</code>). Um crawler só se justifica
+        quando a API não entrega o relatório, a tela ou o export que o negócio precisa.
+      </p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <strong>Já resolvido sem crawler</strong>
+          <span>
+            <code>/cobrancas</code>, <code>/contratos</code>, <code>/repasses</code>
+            → Google Sheets (Apps Script em produção).
+          </span>
+        </div>
+        <div class="card-mini">
+          <strong>Candidatos a crawler</strong>
+          <span>
+            Relatórios só na UI, export XLSX/PDF sem endpoint, fluxos de aprovação
+            em tela, ou dados que a API lista de forma incompleta.
+          </span>
+        </div>
+      </div>
+      <div class="callout callout-warn">
+        Antes de escolher ferramenta: listar <strong>quais telas/relatórios</strong>
+        faltam. Sem esse inventário, a decisão de stack fica especulativa.
+        Relatórios de frota/OS (placa, CELESC) em <code>docs/pdf/*.xlsx</code>
+        parecem de outro sistema — confirmar se entram no escopo Superlógica.
+      </div>
+    </section>
+
+    <section id="sec-crawler-estrategia">
+      <h2>2. Estratégia recomendada (camadas)</h2>
+      <p class="lead">Ordem de preferência — do mais estável ao mais frágil.</p>
+
+      <div class="diagram">
+        <pre class="mermaid">
+flowchart TD
+  A[Necessidade de dado Superlógica] --> B{Existe endpoint API?}
+  B -->|Sim e completo| C[UrlFetch / Node HTTP<br/>como hoje]
+  B -->|Sim mas incompleto| D[API + workarounds<br/>pesquisa, paginação, idContrato]
+  B -->|Não / só UI| E{Export estável<br/>XLSX / CSV / PDF?}
+  E -->|Sim| F[Login + download<br/>parse do arquivo]
+  E -->|Não| G[Crawler de tela<br/>Playwright / Puppeteer]
+  D --> H[Sheets / Controlle / DB]
+  C --> H
+  F --> H
+  G --> H
+        </pre>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Camada</th><th>Quando usar</th><th>Fragilidade</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. API REST</strong></td>
+            <td>Endpoint documentado ou descoberto; tokens já validados</td>
+            <td><span class="status status-ok">baixa</span></td>
+          </tr>
+          <tr>
+            <td><strong>2. Network sniff + API “oculta”</strong></td>
+            <td>UI chama XHR/fetch não listado no OpenAPI — replicar a chamada</td>
+            <td><span class="status status-pending">média</span></td>
+          </tr>
+          <tr>
+            <td><strong>3. Export automatizado</strong></td>
+            <td>Relatório gera XLSX/CSV/PDF estável; parse local</td>
+            <td><span class="status status-pending">média</span></td>
+          </tr>
+          <tr>
+            <td><strong>4. Crawler de DOM</strong></td>
+            <td>Último recurso: ler tabela/tela, clicar, paginar na UI</td>
+            <td><span class="status status-no">alta</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        A documentação oficial da API Superlógica afirma que a UI é construída sobre a API.
+        Na prática do CEMA já vimos gaps (contratos inativos, listagens incompletas) —
+        mas quase sempre resolvidos ainda na camada 1–2, sem browser.
+      </div>
+    </section>
+
+    <section id="sec-crawler-comparativo">
+      <h2>3. Comparativo das tecnologias (experiência prévia)</h2>
+      <p class="lead">
+        Experiência citada: Puppeteer, Cypress, Robot Framework.
+        Incluímos Playwright (sucessor natural do Puppeteer no ecossistema Node).
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Ferramenta</th>
+            <th>Propósito original</th>
+            <th>Bom para crawler?</th>
+            <th>Encaixa no CEMA?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Playwright</strong></td>
+            <td>Automação de browser (Chromium/Firefox/WebKit)</td>
+            <td><span class="status status-rec">excelente</span></td>
+            <td>Alinha com Node+TS previsto para Controlle; auto-wait, traces, storageState</td>
+          </tr>
+          <tr>
+            <td><strong>Puppeteer</strong></td>
+            <td>Controle Chrome/Chromium via DevTools</td>
+            <td><span class="status status-ok">muito bom</span></td>
+            <td>Familiar; só Chromium; menos “baterias” que Playwright (multi-browser, codegen)</td>
+          </tr>
+          <tr>
+            <td><strong>Cypress</strong></td>
+            <td>Testes E2E no browser</td>
+            <td><span class="status status-pending">ruim como crawler</span></td>
+            <td>Ótimo para QA; fraco para jobs headless, auth de sessão longa, downloads e cron</td>
+          </tr>
+          <tr>
+            <td><strong>Robot Framework</strong></td>
+            <td>Automação aceitação (keywords + Selenium/Browser)</td>
+            <td><span class="status status-pending">viável</span></td>
+            <td>Stack Python à parte do rumo Node/TS; overhead de keywords para extrair dados</td>
+          </tr>
+          <tr>
+            <td><strong>Selenium</strong></td>
+            <td>Automação clássica multi-browser</td>
+            <td><span class="status status-pending">viável</span></td>
+            <td>Mais boilerplate; drivers; menos DX que Playwright/Puppeteer</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Critérios de pontuação (0–5)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Critério</th>
+            <th>Playwright</th>
+            <th>Puppeteer</th>
+            <th>Cypress</th>
+            <th>Robot</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Extração de dados / ETL</td>
+            <td>5</td><td>5</td><td>2</td><td>3</td>
+          </tr>
+          <tr>
+            <td>Login + sessão persistente</td>
+            <td>5</td><td>4</td><td>2</td><td>4</td>
+          </tr>
+          <tr>
+            <td>Download de XLSX/PDF</td>
+            <td>5</td><td>4</td><td>2</td><td>4</td>
+          </tr>
+          <tr>
+            <td>Rodar em cron / CI headless</td>
+            <td>5</td><td>5</td><td>3</td><td>4</td>
+          </tr>
+          <tr>
+            <td>Alinhamento stack CEMA (Node/TS)</td>
+            <td>5</td><td>5</td><td>4</td><td>1</td>
+          </tr>
+          <tr>
+            <td>Manutenção quando UI muda</td>
+            <td>4</td><td>3</td><td>3</td><td>3</td>
+          </tr>
+          <tr>
+            <td>Familiaridade do time</td>
+            <td>3*</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td><strong>Total</strong></td>
+            <td><span class="score">32</span></td>
+            <td><span class="score">31</span></td>
+            <td><span class="score">21</span></td>
+            <td><span class="score">24</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:0.9rem;color:var(--muted);margin-top:8px;">
+        *Playwright é o mais próximo do Puppeteer — curva de aprendizado baixa se já houve
+        experiência com Puppeteer.
+      </p>
+    </section>
+
+    <section id="sec-crawler-recomendacao">
+      <h2>4. Recomendação (MFA via e-mail alternativo)</h2>
+      <p class="lead">
+        MFA continua presente, mas o código/token chega em um <strong>e-mail alternativo</strong>
+        controlado pelo time. O crawler lê essa inbox, extrai o OTP e completa o login —
+        viabilizando job não-atendido.
+      </p>
+
+      <div class="callout">
+        <strong>Confirmado:</strong> login tem MFA ·
+        <strong>Estratégia:</strong> inbox alternativa recebe a geração do token/OTP ·
+        crawler (Playwright + leitor IMAP/API de e-mail) automatiza o desafio.
+        Tokens de API (<code>app_token</code> / <code>access_token</code>) seguem preferíveis
+        quando o dado já existir na API — o crawler cobre o que a API não entrega.
+      </div>
+
+      <div class="grid-3">
+        <div class="card-mini">
+          <strong>Dado na API?</strong>
+          <span>Continuar com tokens oficiais (Apps Script / Node). Sem browser.</span>
+        </div>
+        <div class="card-mini">
+          <strong>Dado só na UI?</strong>
+          <span>
+            Playwright: login → poll e-mail OTP → preencher MFA → export/DOM.
+            Job pode rodar em cron.
+          </span>
+        </div>
+        <div class="card-mini">
+          <strong>Ferramenta</strong>
+          <span>
+            Playwright (1ª) ou Puppeteer (alternativa).
+            Cypress/Robot: não.
+          </span>
+        </div>
+      </div>
+
+      <h3>Peças do fluxo MFA por e-mail</h3>
+      <table>
+        <thead>
+          <tr><th>Passo</th><th>O que faz</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Browser</td>
+            <td>Abre Superlógica, preenche usuário/senha, dispara envio do MFA</td>
+          </tr>
+          <tr>
+            <td>2. Inbox</td>
+            <td>
+              Poll IMAP (ou Gmail API) na caixa alternativa; filtra remetente/assunto;
+              regex no corpo para extrair o código/token
+            </td>
+          </tr>
+          <tr>
+            <td>3. MFA</td>
+            <td>Cola o OTP na tela e conclui o login</td>
+          </tr>
+          <tr>
+            <td>4. Sessão</td>
+            <td>Persiste <code>storageState</code> para reuso até expirar (evita MFA a cada run)</td>
+          </tr>
+          <tr>
+            <td>5. Extração</td>
+            <td>Navega, exporta XLSX/CSV ou lê DOM; grava Sheets/arquivo</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>O que não recomendamos</h3>
+      <ul>
+        <li><strong>Cypress</strong> — runner de teste; IMAP + OTP + cron ficam tortos.</li>
+        <li><strong>Robot Framework</strong> — só se o time for Python-first; aqui rumo Node/TS.</li>
+        <li><strong>Usar e-mail pessoal de alguém</strong> — inbox deve ser dedicada (conta de serviço / alias).</li>
+        <li><strong>Duplicar na UI</strong> o que já sai de <code>/cobrancas</code>, <code>/repasses</code>, etc.</li>
+      </ul>
+
+      <div class="callout">
+        Pasta alvo:
+        <code>integrations/superlogica-crawler/</code>
+        (Node + TypeScript + Playwright + cliente IMAP/Gmail).
+      </div>
+    </section>
+
+    <section id="sec-crawler-arquitetura">
+      <h2>5. Arquitetura alvo (login MFA + e-mail)</h2>
+      <p class="lead">Job não-atendido: browser + leitor de inbox alternativa.</p>
+
+      <div class="diagram">
+        <pre class="mermaid">
+flowchart TD
+  Cron[Cron / Action] --> Job[Job Playwright]
+  Job --> Sess{storageState válido?}
+  Sess -->|Sim| Nav[Navegar / filtrar]
+  Sess -->|Não| Login[Login user/senha]
+  Login --> Wait[Aguarda e-mail MFA]
+  Mail[(Inbox alternativa<br/>IMAP / Gmail API)] --> Wait
+  Wait --> OTP[Extrai código/token]
+  OTP --> MFA[Preenche MFA]
+  MFA --> Save[Salva storageState]
+  Save --> Nav
+  Nav --> Exp{Modo}
+  Exp -->|Preferido| DL[Download XLSX/CSV]
+  Exp -->|Fallback| DOM[Ler tabelas DOM]
+  DL --> Out[Sheets / arquivo / Controlle]
+  DOM --> Out
+  Job --> Log[Log + screenshot em falha]
+        </pre>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Peça</th><th>Decisão sugerida</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Runtime</td>
+            <td>Node 20+ / TypeScript</td>
+          </tr>
+          <tr>
+            <td>Browser</td>
+            <td>Playwright Chromium headless</td>
+          </tr>
+          <tr>
+            <td>Auth</td>
+            <td>
+              Credenciais Superlógica em secrets ·
+              OTP via e-mail alternativo ·
+              <code>storageState.json</code> gitignored para reuso de sessão
+            </td>
+          </tr>
+          <tr>
+            <td>Leitor de e-mail</td>
+            <td>
+              IMAP (<code>imapflow</code>) ou Gmail API com OAuth de conta de serviço.
+              Timeout curto (ex.: 60–120s) + filtro por remetente/assunto recente.
+            </td>
+          </tr>
+          <tr>
+            <td>Seletores</td>
+            <td>
+              Preferir <code>getByRole</code> / texto estável; evitar CSS frágeis de framework
+            </td>
+          </tr>
+          <tr>
+            <td>Saída</td>
+            <td>Sheets, arquivo local ou pipeline Controlle — conforme inventário</td>
+          </tr>
+          <tr>
+            <td>Observabilidade</td>
+            <td>Trace Playwright + screenshot + log (sem gravar OTP em log permanente)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sec-crawler-riscos">
+      <h2>6. Riscos específicos do Superlógica</h2>
+      <p class="lead">Pontos que mudam a avaliação custo × benefício do crawler.</p>
+      <ul>
+        <li><strong>Login com MFA — confirmado</strong> — automatizado via <strong>e-mail alternativo</strong> (poll OTP). Risco: atraso/entrega do e-mail, mudança de template, bloqueio de IMAP.</li>
+        <li><strong>Segurança da inbox</strong> — conta dedicada, senha de app / OAuth, sem compartilhar e-mail pessoal; OTP não deve ir para logs permanentes.</li>
+        <li><strong>SPA e seletores</strong> — mudanças de front quebram scripts; exports e XHR quebram menos.</li>
+        <li><strong>Rate limit / sessão</strong> — reusar <code>storageState</code> para não disparar MFA a cada execução.</li>
+        <li><strong>Compliance</strong> — automação de UI + leitura de e-mail; tokens oficiais de API seguem preferíveis quando existirem.</li>
+        <li><strong>Duplicidade</strong> — não reimplementar em crawler o que o Apps Script já cobre via API.</li>
+      </ul>
+    </section>
+
+    <section id="sec-crawler-checklist">
+      <h2>7. Checklist de decisão (para fechar juntos)</h2>
+      <p class="lead">Respostas a estas perguntas fecham a stack.</p>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Pergunta</th><th>Impacto</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Quais relatórios/telas exatamente faltam à API atual?</td>
+            <td>
+              <span class="status status-ok">respondido</span>
+              Despesas (financeiro) —
+              <code>flstatus=2&amp;flcreditodebito=2</code>
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Esses dados aparecem em Network (XHR) ao abrir a tela?</td>
+            <td>Se sim → camada 2 (API oculta), sem Playwright</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Existe botão de export XLSX/CSV/PDF estável?</td>
+            <td>Se sim → Playwright só para download + parse</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Login é user/senha simples ou tem MFA?</td>
+            <td>
+              <span class="status status-ok">MFA + OTP no e-mail alternativo</span>
+              → crawler em cron viável (browser + IMAP)
+            </td>
+          </tr>
+          <tr>
+            <td>4b</td>
+            <td>Provedor da inbox (Gmail, Outlook, outro)? IMAP ou API?</td>
+            <td>Define cliente de e-mail e secrets</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Frequência: sob demanda, diário, a cada hora?</td>
+            <td>Define hosting (Action, VM, local)</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Destino: Sheets, Controlle, arquivo, ambos?</td>
+            <td>Define pasta e contrato de saída</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Preferência do time: Playwright novo ou Puppeteer conhecido?</td>
+            <td>
+              <span class="status status-ok">Playwright (escolha 1)</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sec-crawler-proximos">
+      <h2>8. Próximos passos sugeridos</h2>
+      <div class="callout">
+        <strong>Status 196A (Nauck):</strong>
+        <strong>Opção 1 em operação</strong> — CSV → pasta Drive
+        <code>196a-automacao-superlogica-controller</code> (Shared Drive) → aba <code>196A*</code>
+        (sucesso → lixeira; falha → <code>execucoes-com-erro</code>).
+        <strong>Opção 2 (GitHub Actions dia 01)</strong> — aguarda avaliação/GO do cliente
+        (tasks T11–T16 blocked). Fonte de verdade e tasks:
+        <code>docs/196a-integracao/documentacao-196a-integracao.md</code>.
+        Setup Sheets: <code>integrations/google-sheets-automacao/README.md</code>.
+      </div>
+      <ol>
+        <li>Inventariar telas/relatórios desejados (lista curta, com print ou URL).</li>
+        <li>Para cada item: DevTools → Network — se houver XHR, preferir API com tokens.</li>
+        <li>
+          Confirmar provedor da inbox alternativa (Gmail/Outlook) e acesso
+          (IMAP + senha de app ou OAuth).
+        </li>
+        <li>
+          Spike: Playwright login → poll e-mail → OTP → 1 export;
+          medir tempo até o e-mail chegar e estabilidade do regex.
+        </li>
+        <li>Persistir <code>storageState</code> e só refazer MFA quando a sessão cair.</li>
+      </ol>
+      <div class="callout">
+        Não versionar senha, OTP nem <code>storageState</code>.
+        Inbox deve ser conta/alias dedicada ao robô.
+      </div>
+    </section>
+
+    <section id="sec-crawler-decisao">
+      <h2>9. Registro de decisão</h2>
+      <p class="lead">Decisões fechadas em 04/08/2026 — implementação em andamento.</p>
+      <table>
+        <thead>
+          <tr><th>Campo</th><th>Valor</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Data</td>
+            <td>04/08/2026</td>
+          </tr>
+          <tr>
+            <td>URL alvo (v1)</td>
+            <td>
+              <a href="https://cemaimobiliaria.superlogica.net/clients/" target="_blank" rel="noopener">
+                /clients/ (auth; despesas opcional)
+              </a>
+              <br /><small>tenant: <code>cemaimobiliaria.superlogica.net</code></small>
+            </td>
+          </tr>
+          <tr>
+            <td>Login UI</td>
+            <td>
+              <span class="status status-ok">MFA confirmado</span> ·
+              OTP via <strong>e-mail alternativo</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>Estratégia MFA</td>
+            <td>
+              Crawler lê inbox → extrai token/código → completa login automaticamente
+            </td>
+          </tr>
+          <tr>
+            <td>Camada escolhida</td>
+            <td>
+              <span class="status status-ok">UI crawler (camada 3–4)</span>
+              · API paralela se Network revelar XHR útil
+            </td>
+          </tr>
+          <tr>
+            <td>Ferramenta</td>
+            <td>
+              <span class="status status-ok">Playwright + IMAP</span>
+              (escolha 1)
+            </td>
+          </tr>
+          <tr>
+            <td>Pasta no monorepo</td>
+            <td><code>integrations/superlogica-crawler/</code></td>
+          </tr>
+          <tr>
+            <td>Fora de escopo</td>
+            <td>
+              Cypress · Robot · Puppeteer · usar e-mail pessoal ·
+              duplicar cobranças/repasses já em Apps Script
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      CEMA Integração · Planejamento crawler Superlógica ·
+      abrir este HTML no navegador · usar “Salvar / imprimir PDF” para gerar PDF
+    </footer>
+</section>
+
+
+<div class="part" id="part-sheets">
+  <h2>2 — Guia Superlógica → Google Sheets</h2>
+  <p>Operação da planilha, abas, Taxa Adm e CONFIG. Fonte original: <code>guia-superlogica-sheets.html</code></p>
+</div>
+<section class="section" id="sec-sheets">
+
+
+    <section id="sec-sheets-objetivo">
+      <h2>1. Objetivo</h2>
+      <p class="lead">Trazer para o Sheets os dados financeiros da Superlógica para conferência e análise.</p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <strong>Script de produção</strong>
+          <span><code>integrations/superlogica/src/superlogica-cobrancas-analitico.gs</code></span>
+        </div>
+        <div class="card-mini">
+          <strong>API</strong>
+          <span><code>https://apps.superlogica.net/imobiliaria/api</code></span>
+        </div>
+      </div>
+      <div class="callout">
+        A Taxa Adm Realizada vem da API (<code>/repasses</code>). PDF de movimentações
+        serve apenas para validação/conferência — nunca como fonte de escrita na planilha.
+      </div>
+    </section>
+
+    <section id="sec-sheets-setup">
+      <h2>2. Setup</h2>
+      <ol>
+        <li>Abra a planilha no Google Sheets.</li>
+        <li><strong>Extensões → Apps Script</strong> e cole o <code>.gs</code> de produção.</li>
+        <li>Defina <code>CONFIG.SPREADSHEET_ID</code> (ID da URL entre <code>/d/</code> e <code>/edit</code>).</li>
+        <li>Salve o projeto e recarregue a planilha.</li>
+        <li>Menu <strong>Configurar Tokens</strong> → <code>app_token</code> e <code>access_token</code>.</li>
+        <li><strong>Testar API</strong> → <strong>Importar por período</strong>.</li>
+      </ol>
+      <p>Tokens ficam em <strong>Script Properties</strong>. Nunca versionar no Git.</p>
+    </section>
+
+    <section id="sec-sheets-abas">
+      <h2>3. Abas geradas</h2>
+      <table>
+        <thead>
+          <tr><th>Aba</th><th>Conteúdo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Recebimentos</td><td>Cobranças (schema filtrado)</td></tr>
+          <tr><td>Composição</td><td>Itens de <code>compo_recebimento</code></td></tr>
+          <tr><td>Contratos</td><td>Cadastro de taxa + coluna <code>contrato_ativo</code></td></tr>
+          <tr><td>Taxa Adm Realizada</td><td>Linhas rateadas por proprietário (fonte: repasse)</td></tr>
+          <tr><td>Resumo Analítico</td><td>KPIs, ativos × inativos, totais por fonte</td></tr>
+          <tr><td>Log Importação</td><td>Histórico de execuções</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sec-sheets-fluxo">
+      <h2>4. Fluxo da Taxa Adm</h2>
+      <p class="lead">Como o script monta a aba Taxa Adm Realizada.</p>
+      <div class="diagram">
+        <pre class="mermaid">
+flowchart TD
+  A[GET /contratos ativos] --> B[IDs das cobranças do período]
+  B --> C[Pesquisa gêmeos inativos]
+  C --> D[GET /repasses por idContrato]
+  D --> E[Filtro local de datas m/d/Y]
+  E --> F[Rateio por beneficiário]
+  F --> G[Aba Taxa Adm Realizada]
+  G --> H[Resumo Analítico]
+        </pre>
+      </div>
+      <h3>Contratos ativos e inativos</h3>
+      <ul>
+        <li><strong>Ativos:</strong> retornados por <code>GET /contratos</code>.</li>
+        <li><strong>Inativos:</strong> a listagem padrão omite <code>fl_ativo_con=0</code>.
+          Entram via IDs das cobranças do período e via
+          <code>GET /contratos?pesquisa={número do identificador}</code>.</li>
+        <li>Coluna <code>contrato_ativo</code> = <code>Ativo</code> ou <code>Inativo</code>.</li>
+      </ul>
+    </section>
+
+    <section id="sec-sheets-regras">
+      <h2>5. Regras importantes</h2>
+      <table>
+        <thead>
+          <tr><th>Tema</th><th>Regra</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fonte</td>
+            <td>Sempre <code>/repasses</code>. PDF só valida.</td>
+          </tr>
+          <tr>
+            <td>Período</td>
+            <td>
+              Data em <code>dt_credito_recb</code> <strong>ou</strong>
+              <code>dt_repasse_rep</code> <strong>ou</strong> <code>dt_pagamento</code>
+              (parse <code>m/d/Y</code>).
+            </td>
+          </tr>
+          <tr>
+            <td>Paginação</td>
+            <td>API limita ~50/página. Continuar enquanto a página vier cheia.</td>
+          </tr>
+          <tr>
+            <td>Valor</td>
+            <td>
+              <code>vl_txadm_rep</code> → senão soma <code>vl_txadm_rei</code> →
+              senão fixo/percentual sobre aluguel.
+            </td>
+          </tr>
+          <tr>
+            <td>Número do contrato</td>
+            <td>Dígitos iniciais de <code>st_identificador_imo</code> (não necessariamente o id interno).</td>
+          </tr>
+          <tr>
+            <td>Conferência jun/2026</td>
+            <td>~351 só ativos · ~367 com inativos · PDF ouro 363 (externo).</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sec-sheets-config">
+      <h2>6. CONFIG relevantes</h2>
+      <table>
+        <thead>
+          <tr><th>Chave</th><th>Papel</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>TAXA_ADM_SOMENTE_CONTRATOS_ATIVOS</code></td>
+            <td><code>false</code> = inclui IDs das cobranças (inativos com boleto)</td>
+          </tr>
+          <tr>
+            <td><code>TAXA_ADM_PESQUISAR_CONTRATOS_INATIVOS</code></td>
+            <td><code>true</code> = pesquisa gêmeos por número do identificador</td>
+          </tr>
+          <tr>
+            <td><code>REPASSES_ITENS_POR_PAGINA</code></td>
+            <td>50 (limite prático da API)</td>
+          </tr>
+          <tr>
+            <td><code>TAXA_ADM_INCLUIR_COMPOSICAO</code> / <code>…_DESPESAS</code></td>
+            <td>Desligados por padrão (evitam duplicar a taxa do PDF)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sec-sheets-schemas">
+      <h2>7. Schemas</h2>
+      <p class="lead">Pasta <code>integrations/superlogica/schemas/</code> — só referência e exemplos anonimizados.</p>
+      <ul>
+        <li><code>superlogica-imobiliarias-api.json</code> — OpenAPI</li>
+        <li><code>ex-schema.json</code> / <code>schema-sheets.json</code> — colunas</li>
+        <li><code>*-exemplo.json</code> — amostras pequenas (repasse, despesa, contrato…)</li>
+      </ul>
+      <div class="callout">
+        Não versionar dumps brutos da API. Lista dos arquivos em
+        <code>README.md</code> → seção <strong>Schemas e amostras</strong>.
+      </div>
+    </section>
+
+    <section id="sec-sheets-operacao">
+      <h2>8. Operação diária</h2>
+      <ol>
+        <li>Use <strong>Importar por período</strong> com o mês desejado.</li>
+        <li>Confira <strong>Resumo Analítico</strong> (seção repasses ativo × inativo).</li>
+        <li>Analise a aba <strong>Taxa Adm Realizada</strong> (filtre por <code>contrato_ativo</code> se precisar).</li>
+        <li>Em dúvida de total vs PDF: a API pode diferir algumas linhas/valores; a fonte oficial do script é a API.</li>
+      </ol>
+      <p>
+        Status: <span class="status status-ok">implementado</span>
+        · Código: <code>integrations/superlogica/src/</code>
+      </p>
+    </section>
+
+    <footer>
+      Cema · Guia Superlógica → Google Sheets · Documentação: README.md (raiz)
+    </footer>
+</section>
+
+
+<div class="part" id="part-controlle">
+  <h2>3 — Planejamento Superlógica → Controlle</h2>
+  <p>Contexto Controlle, fluxo alvo e fora de escopo v1. Fonte original: <code>planejamento-superlogica-controlle.html</code></p>
+</div>
+<section class="section" id="sec-controlle">
+<section id="sec-controlle-contexto">
+      <h2>1. Contexto no repositório CEMA</h2>
+      <p class="lead">Este documento cobre só a fatia Controlle. As outras integrações do monorepo já têm código.</p>
+      <table>
+        <thead>
+          <tr><th>Pasta</th><th>Papel</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>integrations/superlogica/</code></td>
+            <td>Apps Script: Superlógica → Google Sheets (cobranças, contratos, taxa adm)</td>
+            <td><span class="status status-ok">implementado</span></td>
+          </tr>
+          <tr>
+            <td><code>integrations/google-sheets-automacao/</code></td>
+            <td>Apps Script: <code>extracao-contratos-196a.gs</code></td>
+            <td><span class="status status-ok">implementado</span></td>
+          </tr>
+          <tr>
+            <td><code>integrations/controlle/</code></td>
+            <td>Futuro serviço de sync Superlógica → Controlle</td>
+            <td><span class="status status-pending">desenvolvimento arquitetural</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Código da integração Controlle deve nascer em <code>integrations/controlle/</code>.
+        Não misturar com os scripts Apps Script atuais.
+      </div>
+    </section>
+
+    <section id="sec-controlle-objetivo">
+      <h2>2. Objetivo</h2>
+      <p class="lead">Automatizar o fluxo financeiro entre os dois sistemas, sem substituir as automações de planilha atuais.</p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <strong>Superlógica Imobiliárias</strong>
+          <span>Origem — contratos, despesas e parcelas de aluguel/compra.</span>
+        </div>
+        <div class="card-mini">
+          <strong>Controlle</strong>
+          <span>Destino — lançamentos de entrada (contas a receber / receitas).</span>
+        </div>
+      </div>
+      <div class="callout">
+        Prioridade da v1: envio Superlógica → Controlle.
+        Retorno de pagamento (Controlle → Superlógica) permanece opcional.
+      </div>
+    </section>
+
+    <section id="sec-controlle-decisoes">
+      <h2>3. Decisões confirmadas</h2>
+      <p class="lead">Alinhamentos já fechados com o negócio.</p>
+      <table>
+        <thead>
+          <tr><th>Item</th><th>Decisão</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Direção principal</td>
+            <td><strong>Superlógica → Controlle</strong> (cria cobrança/entrada)</td>
+          </tr>
+          <tr>
+            <td>Escopo</td>
+            <td>Aluguel de imóvel <strong>e</strong> compra</td>
+          </tr>
+          <tr>
+            <td>Chave de vínculo</td>
+            <td>Número do contrato (ex.: <code>Contrato 12345</code>)</td>
+          </tr>
+          <tr>
+            <td>Tokens</td>
+            <td>
+              Superlógica <span class="status status-ok">validado</span>
+              · Controlle <span class="status status-pending">disponível, não testado</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Fase atual</td>
+            <td>
+              <strong>Desenvolvimento arquitetural</strong> —
+              <code>integrations/controlle/</code> sem código de sync;
+              documentação em <code>docs/</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sec-controlle-fluxo">
+      <h2>4. Fluxo alvo</h2>
+      <p class="lead">Diagramas Mermaid abaixo.</p>
+
+      <h3>Sequência — principal e retorno opcional</h3>
+      <div class="diagram">
+        <pre class="mermaid">
+sequenceDiagram
+  participant SL as Superlogica
+  participant Sync as integrations_controlle
+  participant CT as Controlle
+
+  Note over Sync: Fluxo principal v1
+  Sync->>SL: Buscar despesas de contrato
+  Sync->>CT: Criar entrada com Contrato N
+  Sync->>Sync: Registrar vinculo despesa x lancamento
+
+  Note over Sync: Retorno opcional
+  Sync->>CT: Buscar entradas pagas com Contrato N
+  Sync->>SL: Liquidar despesa do contrato
+  Sync->>Sync: Marcar pagamento processado
+        </pre>
+      </div>
+
+      <h3>Arquitetura lógica</h3>
+      <div class="diagram">
+        <pre class="mermaid">
+flowchart LR
+  subgraph origem [Superlogica]
+    Contratos[Contratos]
+    Despesas[Despesas e parcelas]
+  end
+
+  subgraph sync [integrations_controlle]
+    JobA[Job cobrancas]
+    Store[Store de IDs]
+    JobB[Job pagamentos opcional]
+  end
+
+  subgraph destino [Controlle]
+    Entradas[Lancamentos de entrada]
+    Pagos[Entradas pagas]
+  end
+
+  Contratos --> Despesas
+  Despesas --> JobA
+  JobA --> Entradas
+  JobA --> Store
+  Pagos --> JobB
+  JobB --> Despesas
+  JobB --> Store
+        </pre>
+      </div>
+
+      <h3>Fluxo principal — Cobrança</h3>
+      <ol>
+        <li>Ler no Superlógica as despesas/parcelas de contrato (aluguel e compra).</li>
+        <li>Criar no Controlle um lançamento de <strong>entrada</strong>.</li>
+        <li>Incluir o número do contrato na descrição (<code>Contrato {n}</code>).</li>
+        <li>Guardar o vínculo (id despesa ↔ id lançamento) para não duplicar.</li>
+      </ol>
+
+      <h3>Retorno opcional — Pagamento</h3>
+      <ol>
+        <li>Listar entradas <strong>pagas</strong> no Controlle com número de contrato.</li>
+        <li>Localizar a despesa/parcela no Superlógica.</li>
+        <li>Liquidar no Superlógica e marcar o pagamento como processado.</li>
+      </ol>
+    </section>
+
+    <section id="sec-controlle-mapeamento">
+      <h2>5. Mapeamento funcional</h2>
+      <p class="lead">Campos previstos para a sincronização principal.</p>
+
+      <h3>Superlógica → Controlle</h3>
+      <table>
+        <thead>
+          <tr><th>Origem (Superlógica)</th><th>Destino (Controlle)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Número do contrato</td><td><code>ds_transaction</code> com Contrato N</td></tr>
+          <tr><td>Valor da parcela</td><td>Valor em centavos</td></tr>
+          <tr><td>Data de vencimento</td><td>Data de vencimento do pagamento</td></tr>
+          <tr><td>Data de competência/crédito</td><td>Data de competência</td></tr>
+          <tr><td>Tipo locação vs compra</td><td>Categoria distinta + tag opcional</td></tr>
+          <tr><td>Conta padrão</td><td>Conta bancária configurada</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Endpoints previstos</h3>
+      <ul>
+        <li>Superlógica: Despesas de Contrato — listar</li>
+        <li>Controlle: Criar lançamento de entrada único</li>
+        <li>Retorno opcional: Listar lançamentos paginado + Liquidar despesa</li>
+      </ul>
+    </section>
+
+    <section id="sec-controlle-regras">
+      <h2>6. Regras de negócio</h2>
+      <ol>
+        <li>Só sincroniza registros com número de contrato válido.</li>
+        <li>Não recria no Controlle se a despesa Superlógica já foi sincronizada.</li>
+        <li>No retorno opcional: não reliquida se o pagamento Controlle já foi processado.</li>
+        <li>Locação e compra usam categorias diferentes no Controlle.</li>
+        <li>Em erro parcial: registrar falha, seguir o lote, resumir no final.</li>
+      </ol>
+    </section>
+
+    <section id="sec-controlle-arquitetura">
+      <h2>7. Arquitetura sugerida (futura)</h2>
+      <p class="lead">Proposta para quando houver autorização de implementação — em <code>integrations/controlle/</code>.</p>
+      <ul>
+        <li>Serviço Node.js + TypeScript</li>
+        <li>Jobs agendados (polling 15–60 min)</li>
+        <li>Store de IDs já sincronizados (idempotência)</li>
+        <li>Secrets em variáveis de ambiente (nunca no repositório; ver <code>.gitignore</code> / <code>.env.example</code>)</li>
+      </ul>
+      <div class="callout">
+        Permanecem independentes e fora deste escopo:
+        <code>integrations/superlogica/</code> e
+        <code>integrations/google-sheets-automacao/src/extracao-contratos-196a.gs</code>.
+      </div>
+    </section>
+
+    <section id="sec-controlle-prerequisitos">
+      <h2>8. Pré-requisitos</h2>
+      <div class="grid-2">
+        <div class="card-mini">
+          <strong>Pronto</strong>
+          <span>Tokens Superlógica validados · Token Controlle disponível · Segredos fora do Git · Amostras de schema anonimizadas</span>
+        </div>
+        <div class="card-mini">
+          <strong>Pendente</strong>
+          <span>IDs de conta/categorias no Controlle · Payload de liquidação · Período inicial de sync · Retorno na v1?</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-controlle-fora">
+      <h2>9. Fora do escopo (v1)</h2>
+      <ul>
+        <li>Implementação de código em <code>integrations/controlle/</code> nesta fase</li>
+        <li>Webhooks em tempo real (fase 2; v1 = polling)</li>
+        <li>Sync de contatos, imóveis ou proprietários</li>
+        <li>Substituição da planilha 196A ou do import analítico Sheets</li>
+      </ul>
+    </section>
+
+    <section id="sec-controlle-proximos">
+      <h2>10. Próximos passos</h2>
+      <ol>
+        <li>Validar payloads: listar despesas no Superlógica + criar entrada no Controlle.</li>
+        <li>Fechar categorias/contas no Controlle com o time financeiro.</li>
+        <li>Congelar regras de match (só contrato, ou contrato + valor + vencimento).</li>
+        <li>Decidir se o retorno de pagamento entra na v1.</li>
+        <li>Só então iniciar implementação em <code>integrations/controlle/</code>, sob pedido explícito.</li>
+      </ol>
+    </section>
+
+    <footer>
+      Cema · Planejamento Superlógica → Controlle ·
+      Fase: desenvolvimento arquitetural · Pasta alvo: integrations/controlle ·
+      Documentação: README.md (raiz)
+    </footer>
+</section>
+
+
+    <p class="footer">Gerado em 11 ago 2026 · Metodologia Pedro Nauck (PRD → TechSpec → Tasks → ADRs) · CEMA</p>
+  
+        <p class="footer">Gerado em 11 ago 2026 · Metodologia Pedro Nauck · CEMA</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var body = document.body;
+      var btn = document.getElementById('btn-menu');
+      var overlay = document.getElementById('overlay');
+      function closeMenu() {
+        body.classList.remove('sidebar-open');
+        if (overlay) overlay.hidden = true;
+      }
+      function openMenu() {
+        body.classList.add('sidebar-open');
+        if (overlay) overlay.hidden = false;
+      }
+      if (btn) btn.addEventListener('click', function () {
+        if (body.classList.contains('sidebar-open')) closeMenu();
+        else openMenu();
+      });
+      if (overlay) overlay.addEventListener('click', closeMenu);
+
+      var links = Array.prototype.slice.call(document.querySelectorAll('#doc-nav a[data-nav]'));
+      var map = links.map(function (a) {
+        var id = (a.getAttribute('href') || '').replace(/^#/, '');
+        return { a: a, el: document.getElementById(id) };
+      }).filter(function (x) { return x.el; });
+
+      function setActive() {
+        var y = window.scrollY + 90;
+        var current = map[0];
+        map.forEach(function (item) {
+          if (item.el.offsetTop <= y) current = item;
+        });
+        links.forEach(function (a) { a.classList.remove('active'); });
+        if (current) current.a.classList.add('active');
+      }
+      window.addEventListener('scroll', setActive, { passive: true });
+      setActive();
+
+      links.forEach(function (a) {
+        a.addEventListener('click', function () {
+          if (window.matchMedia('(max-width: 980px)').matches) closeMenu();
+        });
+      });
+
+      var root = document.documentElement;
+      var zoom = 1;
+      var zoomLabel = document.getElementById('btn-zoom-label');
+      function setZoom(next) {
+        zoom = Math.min(1.6, Math.max(0.8, Math.round(next * 100) / 100));
+        root.style.setProperty('--page-zoom', String(zoom));
+        if (zoomLabel) zoomLabel.textContent = Math.round(zoom * 100) + '%';
+      }
+      var btnIn = document.getElementById('btn-zoom-in');
+      var btnOut = document.getElementById('btn-zoom-out');
+      if (btnIn) btnIn.addEventListener('click', function () { setZoom(zoom + 0.1); });
+      if (btnOut) btnOut.addEventListener('click', function () { setZoom(zoom - 0.1); });
+      if (zoomLabel) zoomLabel.addEventListener('click', function () { setZoom(1); });
+
+      var btnBrowser = document.getElementById('btn-width-browser');
+      var btnRead = document.getElementById('btn-width-read');
+      function setWidth(mode) {
+        root.style.setProperty('--content-max', mode === 'read' ? '920px' : 'none');
+        if (btnBrowser) btnBrowser.classList.toggle('active', mode === 'browser');
+        if (btnRead) btnRead.classList.toggle('active', mode === 'read');
+      }
+      if (btnBrowser) btnBrowser.addEventListener('click', function () { setWidth('browser'); });
+      if (btnRead) btnRead.addEventListener('click', function () { setWidth('read'); });
+      setWidth('browser');
+
+      var btnHideNav = document.getElementById('btn-hide-nav');
+      var btnShowNav = document.getElementById('btn-show-nav');
+      function setNavHidden(hidden) {
+        body.classList.toggle('nav-hidden', hidden);
+        if (hidden) {
+          closeMenu();
+          return;
+        }
+        if (window.matchMedia('(max-width: 980px)').matches) openMenu();
+        else closeMenu();
+      }
+      if (btnHideNav) btnHideNav.addEventListener('click', function () { setNavHidden(true); });
+      if (btnShowNav) btnShowNav.addEventListener('click', function () { setNavHidden(false); });
+      if (btn) {
+        btn.addEventListener('click', function (e) {
+          if (body.classList.contains('nav-hidden')) {
+            e.stopImmediatePropagation();
+            setNavHidden(false);
+          }
+        }, true);
+      }
+    })();
+  </script>
+</body>
+</html>

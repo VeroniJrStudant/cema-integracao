@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Documentação 196A — CEMA Integração</title>
+  <link rel="stylesheet" href="pdf-print.css" />
+</head>
+<body>
+  <section class="cover">
+    <div class="cover-badge">CEMA · Integração Superlógica</div>
+    <h1>Documentação 196A</h1>
+    <p class="lead">PRD, TechSpec e decisões (ADRs) da integração do relatório Movimentações por categoria até a planilha Google Sheets.</p>
+    <div class="meta-row">
+      <span class="chip ok">Opção 1 em operação</span>
+      <span class="chip warn">Opção 2 aguarda GO do cliente</span>
+      <span class="chip">Método Nauck · Idea → Spec → Tasks → ADRs</span>
+      <span class="chip">Atualizado 29 ago 2026</span>
+    </div>
+    <div class="cover-card">
+      <h2>O que este documento cobre</h2>
+      <ol>
+        <li>Problema, objetivo e escopo (PRD)</li>
+        <li>Arquitetura da Fase A e da Fase B</li>
+        <li>Separação API × relatório 196A</li>
+        <li>Decisões registradas (ADR-001 a ADR-010)</li>
+        <li>Critérios de sucesso e pendências</li>
+      </ol>
+    </div>
+    <div class="cover-card">
+      <h2>Como usar</h2>
+      <p>Este PDF é a memória do produto. Os passos executáveis estão no PDF irmão <strong>Tarefas 196A</strong> (T0–T20). Não implementar Fase B sem GO explícito do cliente (T20).</p>
+    </div>
+  </section>
+
+  <div class="part">
+    <h2>0. Metodologia</h2>
+    <p>Pipeline Pedro Nauck / CompozyOS — não implementar em prompt único.</p>
+  </div>
+
+  <div class="section">
+    <p>A documentação versionável vem antes do código novo. Tasks têm status, dependência e critério de aceite. Decisões ficam em ADRs para não se perderem no chat.</p>
+    <div class="flow">
+      <div class="box">PRD / Idea</div><span class="arrow">→</span>
+      <div class="box">TechSpec</div><span class="arrow">→</span>
+      <div class="box">Tasks</div><span class="arrow">→</span>
+      <div class="box">Avaliação cliente</div>
+    </div>
+    <p>Se a Opção 1 estiver ok, segue operação mensal. Se o cliente aprovar a Opção 2, implementa-se GitHub Actions e só então se faz review.</p>
+    <table>
+      <thead>
+        <tr><th>Papel</th><th>Neste projeto</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Memória</td><td>Este PDF + Markdown em <code>docs/196a-integracao/</code> + READMEs</td></tr>
+        <tr><td>Spec</td><td>Seção TechSpec abaixo</td></tr>
+        <tr><td>Tasks</td><td>PDF de tarefas (status explícito)</td></tr>
+        <tr><td>Execução</td><td>Task a task — não “implementa tudo”</td></tr>
+        <tr><td>Review</td><td>Critérios de aceite + checklist</td></tr>
+      </tbody>
+    </table>
+    <div class="callout-warn">
+      <strong>Anti-padrões:</strong> prompt gigante; misturar API e 196A; implementar GitHub Actions antes do GO do cliente.
+    </div>
+  </div>
+
+  <div class="part">
+    <h2>1. PRD / Idea</h2>
+    <p>Por que o 196A existe e o que “pronto” significa.</p>
+  </div>
+
+  <div class="section">
+    <h3>1.1 Problema</h3>
+    <p>A CEMA precisa, todo mês, do relatório <strong>196A — Movimentações por categoria</strong> (conta <strong>1.1.1 Taxa de administração</strong>) na planilha Google Sheets, para extrair contratos.</p>
+    <p>O caminho antigo (cookie manual / colar CSV) é frágil. A API <code>app_token</code> / <code>access_token</code> <strong>não</strong> substitui o 196A. Tokens da API alimentam outro fluxo: Recebimentos / Taxa Adm Realizada.</p>
+
+    <h3>1.2 Objetivo</h3>
+    <ol class="compact">
+      <li><strong>Agora (Opção 1):</strong> CSV chega na pasta Drive → acionador Sheets preenche <code>196A*</code> → extração de contratos.</li>
+      <li><strong>Depois (Opção 2 — pós avaliação):</strong> no dia 01, GitHub Actions roda o crawler sem Mac e publica o CSV na <strong>mesma</strong> pasta Drive.</li>
+    </ol>
+
+    <h3>1.3 Escopo</h3>
+    <table>
+      <thead>
+        <tr><th>In scope</th><th>Out of scope</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            Crawler Playwright; relatório 196A (mês anterior, categoria 1.1.1, Detalhado); export CSV + upload Drive; Apps Script import + extrair contratos; agendamento nuvem (planejado, não implementar até GO).
+          </td>
+          <td>
+            Substituir a API oficial de cobranças/repasses; Kubernetes; CompozyOS em produção (só metodologia); reescrita do script analítico.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>1.4 Fases de produto</h3>
+    <table>
+      <thead>
+        <tr><th>Fase</th><th>Nome</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>A</strong></td><td>Opção 1 — CSV → Drive → Acionador Sheets</td><td>Em operação</td></tr>
+        <tr><td><strong>B</strong></td><td>Opção 2 — GitHub Actions dia 01</td><td>Bloqueada — aguarda GO do cliente</td></tr>
+        <tr><td><strong>C</strong></td><td>Cookie na planilha / UrlFetch</td><td>Opcional / baixa prioridade</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>1.5 Critérios de sucesso</h3>
+    <h4>Fase A (atuais)</h4>
+    <ul class="compact">
+      <li>Crawler gera CSV 196A do mês anterior — feito</li>
+      <li>Upload para pasta Drive <code>196a-automacao-superlogica-controller</code> (Unidade compartilhada) — feito</li>
+      <li>Acionador / menu importa CSV → aba <code>196A*</code> — feito</li>
+      <li>Sucesso → lixeira; falha → <code>execucoes-com-erro</code> — feito</li>
+      <li>Runbook operacional documentado e validado com o cliente — pendente (T17 / T20)</li>
+      <li>Extração de contratos encadeada ou checklist claro pós-import — pendente (T10)</li>
+    </ul>
+    <h4>Fase B (após GO)</h4>
+    <ul class="compact">
+      <li>Dia 01: job roda sem Mac ligado</li>
+      <li>Secrets no GitHub (não no notebook)</li>
+      <li>Alerta se login / OTP / CSV falhar</li>
+      <li>E2E em planilha cópia / staging</li>
+    </ul>
+  </div>
+
+  <div class="part">
+    <h2>2. TechSpec</h2>
+    <p>Como o sistema está montado e o que não pode ser misturado.</p>
+  </div>
+
+  <div class="section">
+    <h3>2.1 Arquitetura — Fase A (em operação)</h3>
+    <div class="flow">
+      <div class="box">Operador / Mac</div><span class="arrow">→</span>
+      <div class="box">npm run crawl</div><span class="arrow">→</span>
+      <div class="box">CSV local</div><span class="arrow">→</span>
+      <div class="box">Upload Drive SA</div><span class="arrow">→</span>
+      <div class="box">Shared Drive</div><span class="arrow">→</span>
+      <div class="box">Acionador 15 min</div><span class="arrow">→</span>
+      <div class="box">Aba 196A*</div><span class="arrow">→</span>
+      <div class="box">Extrair contratos</div>
+    </div>
+    <p>Contrato da pasta na Unidade compartilhada:</p>
+    <pre>196a-automacao-superlogica-controller/
+  ├── CSV novo
+  └── execucoes-com-erro/</pre>
+    <p>Sucesso: preenche <code>196A*</code> e manda o CSV para a lixeira. Falha: move para <code>execucoes-com-erro</code>; a aba não muda. Não converter o CSV em Planilha Google no upload.</p>
+  </div>
+
+  <div class="section">
+    <h3>2.2 Arquitetura-alvo — Fase B (pós avaliação)</h3>
+    <div class="flow">
+      <div class="box">GH Actions dia 01</div><span class="arrow">→</span>
+      <div class="box">Crawler headless</div><span class="arrow">→</span>
+      <div class="box">CSV 196A</div><span class="arrow">→</span>
+      <div class="box">Mesma pasta Drive</div><span class="arrow">→</span>
+      <div class="box">Acionador Sheets</div><span class="arrow">→</span>
+      <div class="box">196A* + extração</div>
+    </div>
+    <div class="callout">
+      A Fase B <strong>reutiliza</strong> a pasta e o Apps Script da Fase A. Não troca o contrato. Só muda quem coloca o arquivo.
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>2.3 Separação de mundos</h3>
+    <table>
+      <thead>
+        <tr><th>Mundo</th><th>Credencial</th><th>Abas / artefato</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>API Superlógica</td>
+          <td><code>app_token</code> + <code>access_token</code></td>
+          <td>Recebimentos, Composição, Contratos, Taxa Adm Realizada, Resumo</td>
+        </tr>
+        <tr>
+          <td>Web 196A</td>
+          <td>Sessão browser / CSV</td>
+          <td>Aba <code>196A*</code> + destino da extração</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Na planilha: <strong>dois arquivos</strong> <code>.gs</code>, <strong>um</strong> <code>onOpen</code> (no analítico). Dois <code>onOpen</code> se sobrescrevem e somem o menu “Importar por período”.</p>
+    <p><strong>Não misturar:</strong> tokens da API não geram o 196A; o CSV do 196A não alimenta Taxa Adm Realizada.</p>
+  </div>
+
+  <div class="section">
+    <h3>2.4 Runtime (ranking — fácil + barato)</h3>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Opção</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>CSV → Drive → Acionador Sheets</td><td>Fase A — em operação</td></tr>
+        <tr><td>2</td><td>GitHub Actions dia 01</td><td>Fase B — após GO</td></tr>
+        <tr><td>3</td><td>Renovar cookie 2d + Acionador</td><td>Não priorizado</td></tr>
+        <tr><td>4</td><td>Render / Railway cron</td><td>Alternativa se GH Actions falhar</td></tr>
+        <tr><td>5</td><td>Oracle / GCP free VM</td><td>Alternativa</td></tr>
+        <tr><td>6</td><td>E-mail Superlógica → Apps Script</td><td>Só se o produto for confiável</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>2.5 Componentes e pastas</h3>
+    <table>
+      <thead>
+        <tr><th>Componente</th><th>Pasta</th><th>Responsabilidade</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Crawler</td>
+          <td><code>integrations/superlogica-crawler</code></td>
+          <td>Login + MFA, UI 196A, CSV, upload Drive</td>
+        </tr>
+        <tr>
+          <td>Parser 196A</td>
+          <td><code>integrations/google-sheets-automacao</code></td>
+          <td>Import Drive + parse <code>196A*</code> → destino</td>
+        </tr>
+        <tr>
+          <td>Analítico API</td>
+          <td><code>integrations/superlogica</code></td>
+          <td>Tokens: Recebimentos, Taxa Adm, Resumo</td>
+        </tr>
+      </tbody>
+    </table>
+    <h4>Filtros fixos do relatório 196A</h4>
+    <ul class="compact">
+      <li>Entrada: <code>https://apps.superlogica.net/imobiliaria</code></li>
+      <li>Caminho: Empresa → Relatórios → Banco → <strong>196A</strong></li>
+      <li>Vencimento: <strong>mês anterior</strong></li>
+      <li>Categoria: <strong>1.1.1 Taxa de administração</strong></li>
+      <li>Detalhar: <strong>Detalhado</strong></li>
+      <li>Download via id de impressão / histórico</li>
+    </ul>
+    <h4>Segredos (nunca no git)</h4>
+    <ul class="compact">
+      <li><code>.env</code> — Superlógica, Gmail OTP, <code>DRIVE_FOLDER_ID</code>, <code>DRIVE_UPLOAD</code></li>
+      <li><code>.auth/storage-state.json</code> — sessão Playwright</li>
+      <li><code>.auth/google-sa.json</code> — service account Drive</li>
+    </ul>
+  </div>
+
+  <div class="part">
+    <h2>3. Decisões (ADRs)</h2>
+    <p>Memória estável. Se a decisão mudar, atualize o ADR antes de mexer no código.</p>
+  </div>
+
+  <div class="section">
+    <h3>ADR-001 — 196A usa sessão web, não app_token</h3>
+    <p>196A via sessão de browser / CSV. A API de tokens não entrega este relatório.</p>
+
+    <h3>ADR-002 — PHPSESSID ~3 dias; server-id não autentica</h3>
+    <p>Cookie web é curto. Job mensal deve renovar sessão no dia do uso.</p>
+
+    <h3>ADR-003 — Preferir CSV → Drive → Sheets (fase 1)</h3>
+    <p>MVP = arquivo CSV na pasta Drive; Apps Script importa. Cookie na planilha é opcional. Contrato: Shared Drive + <code>execucoes-com-erro</code>.</p>
+
+    <h3>ADR-004 — Download via id de impressão</h3>
+    <p>Baixar o <code>id</code> da run atual (<code>baixar=1</code> / <code>documentos/download</code>).</p>
+
+    <h3>ADR-005 — Runtime fora do Mac; não K8s no MVP</h3>
+    <p>Default futuro = GitHub Actions. Só implementar após GO do cliente (ADR-008).</p>
+
+    <h3>ADR-006 — Pipeline de docs antes de código novo</h3>
+    <p>PRD → TechSpec → Tasks → implementação task a task.</p>
+
+    <h3>ADR-007 — Separar papéis crawler vs parser vs API</h3>
+    <p>Crawler autentica e publica CSV. Parser importa e extrai contratos. Analítico usa tokens. Não fundir os três.</p>
+
+    <h3>ADR-008 — Fase B gated por avaliação do cliente</h3>
+    <p>Não implementar GitHub Actions / Docker cron enquanto o cliente não validar a Fase A e der GO explícito. Motivo: Opção 1 já entrega valor; Opção 2 é custo/ops que depende de aceite. Consequência: T7 e T11–T16 ficam <code>blocked</code> até T20.</p>
+
+    <h3>ADR-009 — Upload Drive via Unidade compartilhada</h3>
+    <p>Pasta de entrada vive em Shared Drive; service account como Gerenciador de conteúdo. Motivo: SA não tem cota no “Meu Drive” (<code>storageQuotaExceeded</code>).</p>
+
+    <h3>ADR-010 — Dois scripts Apps Script; um onOpen</h3>
+    <p>Planilha carrega analítico + 196A. <code>onOpen</code> só no analítico; chama <code>criarMenuAutomacoes196A_()</code>.</p>
+  </div>
+
+  <div class="section">
+    <h3>Pendências de decisão</h3>
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Competência do relatório = mês anterior</td><td>Decidido</td></tr>
+        <tr><td>Pasta Drive = <code>196a-automacao-superlogica-controller</code></td><td>Decidido</td></tr>
+        <tr><td>Canal de alerta Fase B (e-mail CEMA / Telegram)</td><td>Decidir no GO</td></tr>
+        <tr><td>Confirmar se Fase C (cookie) será feita</td><td>Aberto</td></tr>
+        <tr><td>T20 — GO / NÃO-GO do cliente para Fase B</td><td>Aberto</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="part">
+    <h2>4. Operação mensal (visão)</h2>
+    <p>O detalhe passo a passo está no PDF de tarefas.</p>
+  </div>
+
+  <div class="section">
+    <ol class="compact">
+      <li>No Mac: <code>cd integrations/superlogica-crawler</code> e <code>PLAYWRIGHT_HEADED=true npm run crawl</code></li>
+      <li>Confirmar CSV em <code>output/</code> e upload na pasta Shared Drive</li>
+      <li>Esperar o acionador (15 min) ou importar pelo menu Automações Privadas</li>
+      <li>Conferir aba <code>196A*</code></li>
+      <li>Rodar Extrair Contratos e validar a aba destino</li>
+      <li>Se o CSV foi para <code>execucoes-com-erro</code>, não extrair — investigar o arquivo</li>
+    </ol>
+    <div class="callout-warn">
+      <strong>Fazer agora:</strong> T18 → T17 → T19 → T10 → T20. Fase B só depois do GO.
+    </div>
+  </div>
+
+  <p class="footer-note">CEMA Integração · Documentação 196A · Fonte: docs/196a-integracao · 29 ago 2026</p>
+</body>
+</html>

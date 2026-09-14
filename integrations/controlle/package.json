@@ -1,0 +1,25 @@
+{
+  "name": "cema-controlle",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sync CSV 196A (Taxa Adm) → Controlle (entrada 3.1.12 / Intermediação)",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "resolve-ids": "tsx src/cli/resolve-ids.ts",
+    "post:dry": "tsx src/cli/post-dry.ts",
+    "post:one": "tsx src/cli/post-one.ts",
+    "sync:csv": "tsx src/cli/sync-csv.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

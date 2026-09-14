@@ -364,9 +364,14 @@ function onOpen() {
     .addItem('🔑 Configurar Tokens', 'configurarTokensUi')
     .addItem('🧪 Testar API (1 página)', 'executarTeste')
     .addItem('🧪 Testar datas Taxa Adm (API m/d/Y)', 'executarTestesDatasTaxaAdm')
-    .addItem('🧪 Validar fixture PDF ouro (363 / 84.509,30)', 'testarTaxaAdmPdfOuro')
-    .addItem('🔎 Comparar aba Taxa Adm × PDF ouro', 'compararTaxaAdmAbaComPdfOuro')
+    // .addItem('🧪 Validar fixture PDF ouro (363 / 84.509,30)', 'testarTaxaAdmPdfOuro')
+    // .addItem('🔎 Comparar aba Taxa Adm × PDF ouro', 'compararTaxaAdmAbaComPdfOuro')
     .addToUi();
+
+  // Menu 196A (CSV → Drive), se o arquivo extracao-contratos-196a.gs estiver no mesmo projeto
+  if (typeof criarMenuAutomacoes196A_ === 'function') {
+    criarMenuAutomacoes196A_();
+  }
 }
 
 function configurarTokensUi() {
@@ -1917,7 +1922,7 @@ function aplicarFormatoMoedaColunas_(sh, headers, numRows, campos) {
 
 /**
  * Aplica layout visual do Resumo Analítico a partir de meta por linha.
- * meta[i].kind: title | section | note | header | kpi | data | total | blank | accent_ativo | accent_inativo
+ * meta[i].kind: title | section | note | header | kpi | data | total | blank | accent_ativo | accent_inativo | gap_pos | gap_neg
  * meta[i].moneyCols: índices 0-based das colunas em R$
  */
 function formatarAbaResumoAnalitico_(sh, out, meta, maxCols) {
@@ -1995,8 +2000,17 @@ function formatarAbaResumoAnalitico_(sh, out, meta, maxCols) {
       range.setBackground(C.inativoBg);
     } else if (kind === 'blank') {
       sh.setRowHeight(r + 1, 10);
-    } else if (kind === 'data' && r % 2 === 0) {
-      range.setBackground(C.zebra);
+    } else if (kind === 'data') {
+      // zebra só em linhas de dados (ignora título/seção/blank)
+      var dataIdx = 0;
+      for (var j = 0; j <= r; j++) {
+        if (((meta && meta[j] && meta[j].kind) || 'data') === 'data') dataIdx++;
+      }
+      if (dataIdx % 2 === 0) range.setBackground(C.zebra);
+    } else if (kind === 'gap_pos') {
+      range.setBackground('#d8f3dc').setFontWeight('bold');
+    } else if (kind === 'gap_neg') {
+      range.setBackground('#fde2e1').setFontWeight('bold');
     }
 
     // Alinha números à direita
@@ -2405,7 +2419,7 @@ function executarImportacao_(periodo) {
       } catch (e2) {}
     }
 
-    escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm);
+    escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm, periodo);
 
     var somaTaxaAlert = 0;
     var contratosTaxa = {};
@@ -2441,7 +2455,7 @@ function executarImportacao_(periodo) {
     var alvoAtivos = CONFIG.TAXA_ADM_ALVO_LINHAS_ATIVOS_JUN2026 || 351;
     var alvoApi = CONFIG.TAXA_ADM_ALVO_LINHAS_API_JUN2026 || 367;
     var comInativos = CONFIG.TAXA_ADM_SOMENTE_CONTRATOS_ATIVOS !== true;
-    var bateApi =
+    var bateApiAtivos =
       periodoEhJunho2026_(periodo) &&
       linhasTaxaAdm.length === (comInativos ? alvoApi : alvoAtivos);
     var diagR = diagnosticarRepassesTaxaAdm_(repasses, periodo);
@@ -2456,7 +2470,7 @@ function executarImportacao_(periodo) {
       '• Soma: R$ ' + somaLinhasAlert.toFixed(2).replace('.', ',') +
       ' (PDF 84.509,30)\n' +
       '• Match API (' + (comInativos ? alvoApi : alvoAtivos) + '): ' +
-      (bateApi ? 'SIM ✅' : 'NÃO ❌') + '\n' +
+      (bateApiAtivos ? 'SIM ✅' : 'NÃO ❌') + '\n' +
       '• Match PDF (363): ' + (batePdf ? 'SIM ✅' : 'NÃO ❌') + '\n' +
       '• Repasses no período: ' + diagR.noPeriodo +
       ' → linhas rateio ' + diagR.linhas + '\n';
@@ -2625,13 +2639,26 @@ function escreverTaxaAdmRealizada_(ss, linhas) {
   aplicarFormatoMoedaColunas_(sh, headers, rows.length, ['valor', 'vl_aluguel_base']);
 }
 
-function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
+/**
+ * Monta a aba CONFIG.ABA_RESUMO com KPIs e blocos analíticos.
+ * @param {SpreadsheetApp.Spreadsheet} ss
+ * @param {Object[]} cobrancas
+ * @param {Object[]} contratos
+ * @param {Object[]} linhasTaxaAdm
+ * @param {{rotulo?: string}=} periodo opcional (ex.: importação por período)
+ * @return {{somaTaxa: number, somaRepasse: number, coberturaPct: number}}
+ */
+function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm, periodo) {
   var sh = ensureSheet_(ss, CONFIG.ABA_RESUMO);
   limparAba_(sh);
 
   contratos = contratos || [];
   linhasTaxaAdm = linhasTaxaAdm || [];
   cobrancas = cobrancas || [];
+
+  var TOP_PRODUTOS = 30;
+  var TOP_CONTRATOS = 50;
+  var ORDEM_FONTES = ['repasse', 'despesa', 'composicao', 'w196a_csv', 'w196a_sessao'];
 
   var porStatus = {};
   var porProduto = {};
@@ -2654,7 +2681,7 @@ function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
     porContrato[contrato].total += total;
 
     (item.compo_recebimento || []).forEach(function (c) {
-      var p = c.st_descricao_prd || '(sem produto)';
+      var p = String(c.st_descricao_prd || '(sem produto)').trim() || '(sem produto)';
       if (!porProduto[p]) porProduto[p] = { qtd: 0, total: 0 };
       porProduto[p].qtd++;
       porProduto[p].total += num_(c.st_valor_comp);
@@ -2692,11 +2719,12 @@ function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
   };
 
   linhasTaxaAdm.forEach(function (r) {
-    var f = r.fonte || '(sem)';
+    var f = String(r.fonte || '(sem)').trim() || '(sem)';
     if (!porFonteTaxa[f]) porFonteTaxa[f] = { qtd: 0, total: 0, contratos: {} };
+    var valorLinha = num_(r.valor);
     porFonteTaxa[f].qtd++;
-    porFonteTaxa[f].total += num_(r.valor);
-    somaTaxaRealizada += num_(r.valor);
+    porFonteTaxa[f].total += valorLinha;
+    somaTaxaRealizada += valorLinha;
 
     var nc = String(r.numero_contrato || '').trim();
     if (nc) {
@@ -2706,11 +2734,11 @@ function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
 
     if (f === 'despesa') {
       qtdDespesa++;
-      somaDespesa += num_(r.valor);
+      somaDespesa += valorLinha;
       if (nc) contratosDistintosDespesa[nc] = true;
     } else if (f === 'repasse') {
       qtdRepasse++;
-      somaRepasse += num_(r.valor);
+      somaRepasse += valorLinha;
       if (nc) contratosDistintosRepasse[nc] = true;
 
       var ativoKey = String(r.contrato_ativo || '').trim();
@@ -2719,7 +2747,7 @@ function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
         porAtivoRepasse[ativoKey] = { qtd: 0, total: 0, contratos: {} };
       }
       porAtivoRepasse[ativoKey].qtd++;
-      porAtivoRepasse[ativoKey].total += num_(r.valor);
+      porAtivoRepasse[ativoKey].total += valorLinha;
       if (nc) porAtivoRepasse[ativoKey].contratos[nc] = true;
     }
   });
@@ -2732,27 +2760,54 @@ function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
   }
   function blank_() { add_([''], 'blank'); }
   function round2_(n) { return Math.round(num_(n) * 100) / 100; }
+  function pct_(num, den) {
+    if (!den) return 0;
+    return round2_((num_(num) / num_(den)) * 100);
+  }
+  function sortFontes_(keys) {
+    return keys.slice().sort(function (a, b) {
+      var ia = ORDEM_FONTES.indexOf(a);
+      var ib = ORDEM_FONTES.indexOf(b);
+      if (ia < 0) ia = 999;
+      if (ib < 0) ib = 999;
+      if (ia !== ib) return ia - ib;
+      return String(a).localeCompare(String(b));
+    });
+  }
+
+  var ticketMedio = cobrancas.length ? round2_(totalGeral / cobrancas.length) : 0;
+  var gapCadastroVsRepasse = round2_(somaRepasse - somaEstimativaAdm);
+  var coberturaRepassePct = pct_(somaRepasse, somaEstimativaAdm);
+  var coberturaTodasPct = pct_(somaTaxaRealizada, somaEstimativaAdm);
+  var gapKind = gapCadastroVsRepasse >= 0 ? 'gap_pos' : 'gap_neg';
 
   // —— 1. Título / visão geral ——
   add_(['RESUMO ANALÍTICO'], 'title');
   add_(['Gerado em', new Date()], 'kpi');
+  if (periodo && periodo.rotulo) {
+    add_(['Período', String(periodo.rotulo)], 'kpi');
+  }
   blank_();
   add_(['1. VISÃO GERAL'], 'section');
   add_(['Indicador', 'Valor'], 'header');
   add_(['Cobranças (recebimentos)', cobrancas.length], 'kpi');
   add_(['Soma cobranças (vl_total_recb)', round2_(totalGeral)], 'kpi', [1]);
+  add_(['Ticket médio (cobrança)', ticketMedio], 'kpi', [1]);
   add_(['Contratos na importação', contratos.length], 'kpi');
   add_(['  ├ Ativos', qtdContratosAtivosCad], 'accent_ativo');
   add_(['  └ Inativos', qtdContratosInativosCad], 'accent_inativo');
   add_(['Estimativa taxa adm/mês (cadastro)', round2_(somaEstimativaAdm)], 'kpi', [1]);
   add_(['Taxa Adm Realizada (todas as fontes)', round2_(somaTaxaRealizada)], 'kpi', [1]);
   add_(['  └ só repasses', round2_(somaRepasse)], 'total', [1]);
+  add_(['Cobertura repasse ÷ cadastro (%)', coberturaRepassePct], 'kpi');
+  add_(['Cobertura todas ÷ cadastro (%)', coberturaTodasPct], 'kpi');
+  add_(['Gap (repasse − cadastro) R$', gapCadastroVsRepasse], gapKind, [1]);
 
   // —— 2. Repasses ativo/inativo (destaque) ——
   blank_();
   add_(['2. REPASSES — ATIVO × INATIVO'], 'section');
   add_(['Fonte: aba Taxa Adm Realizada · coluna contrato_ativo'], 'note');
-  add_(['Situação', 'Linhas', 'Contratos', 'Soma R$'], 'header');
+  add_(['Situação', 'Linhas', 'Contratos', 'Soma R$', '% do total'], 'header');
   ['Ativo', 'Inativo', '(sem)'].forEach(function (k) {
     var bloco = porAtivoRepasse[k];
     if (!bloco || (!bloco.qtd && k === '(sem)')) return;
@@ -2761,36 +2816,41 @@ function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
       k,
       bloco.qtd,
       Object.keys(bloco.contratos).length,
-      round2_(bloco.total)
+      round2_(bloco.total),
+      pct_(bloco.total, somaRepasse)
     ], kindRow, [3]);
   });
   add_([
     'Total repasses',
     qtdRepasse,
     Object.keys(contratosDistintosRepasse).length,
-    round2_(somaRepasse)
+    round2_(somaRepasse),
+    somaRepasse ? 100 : 0
   ], 'total', [3]);
 
   // —— 3. Por fonte ——
   blank_();
   add_(['3. TAXA ADM REALIZADA POR FONTE'], 'section');
-  add_(['fonte', 'Linhas', 'Contratos', 'Soma R$'], 'header');
-  Object.keys(porFonteTaxa).sort().forEach(function (k) {
+  add_(['fonte', 'Linhas', 'Contratos', 'Soma R$', '% do total'], 'header');
+  var fontes = sortFontes_(Object.keys(porFonteTaxa));
+  fontes.forEach(function (k) {
     add_([
       k,
       porFonteTaxa[k].qtd,
       Object.keys(porFonteTaxa[k].contratos).length,
-      round2_(porFonteTaxa[k].total)
+      round2_(porFonteTaxa[k].total),
+      pct_(porFonteTaxa[k].total, somaTaxaRealizada)
     ], 'data', [3]);
   });
-  if (!Object.keys(porFonteTaxa).length) {
-    add_(['(sem lançamentos)', 0, 0, 0], 'data', [3]);
+  if (!fontes.length) {
+    add_(['(sem lançamentos)', 0, 0, 0, 0], 'data', [3]);
   }
   add_([
     'Total',
     linhasTaxaAdm.length,
     Object.keys(contratosDistintosTodas).length,
-    round2_(somaTaxaRealizada)
+    round2_(somaTaxaRealizada),
+    somaTaxaRealizada ? 100 : 0
   ], 'total', [3]);
 
   // —— 4. Conferência compacta ——
@@ -2820,52 +2880,76 @@ function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
   // —— 5. Cadastro ——
   blank_();
   add_(['5. TAXA ADM CADASTRADA (aba Contratos)'], 'section');
-  add_(['Tipo', 'Contratos', 'Estimativa/mês R$'], 'header');
+  add_(['Tipo', 'Contratos', 'Estimativa/mês R$', '% da estimativa'], 'header');
   Object.keys(porTipoAdm).forEach(function (k) {
-    add_([k, porTipoAdm[k].qtd, round2_(porTipoAdm[k].estimativa)], 'data', [2]);
+    add_([
+      k,
+      porTipoAdm[k].qtd,
+      round2_(porTipoAdm[k].estimativa),
+      pct_(porTipoAdm[k].estimativa, somaEstimativaAdm)
+    ], 'data', [2]);
   });
-  add_(['Total', contratos.length, round2_(somaEstimativaAdm)], 'total', [2]);
+  add_(['Total', contratos.length, round2_(somaEstimativaAdm), somaEstimativaAdm ? 100 : 0], 'total', [2]);
 
   // —— 6. Cobranças por status ——
   blank_();
   add_(['6. COBRANÇAS POR STATUS'], 'section');
-  add_(['Status', 'Qtd', 'Soma R$'], 'header');
+  add_(['Status', 'Qtd', 'Soma R$', '% da soma'], 'header');
   Object.keys(porStatus).sort().forEach(function (k) {
-    add_([k, porStatus[k].qtd, round2_(porStatus[k].total)], 'data', [2]);
+    add_([
+      k,
+      porStatus[k].qtd,
+      round2_(porStatus[k].total),
+      pct_(porStatus[k].total, totalGeral)
+    ], 'data', [2]);
   });
   if (!Object.keys(porStatus).length) {
-    add_(['(sem cobranças)', 0, 0], 'data', [2]);
+    add_(['(sem cobranças)', 0, 0, 0], 'data', [2]);
   }
 
-  // —— 7. Produtos ——
+  // —— 7. Produtos (top N) ——
   blank_();
-  add_(['7. PRODUTOS NA COMPOSIÇÃO'], 'section');
+  add_(['7. PRODUTOS NA COMPOSIÇÃO (TOP ' + TOP_PRODUTOS + ')'], 'section');
   add_(['Produto', 'Qtd', 'Soma R$'], 'header');
-  Object.keys(porProduto).sort(function (a, b) {
+  var produtosOrdenados = Object.keys(porProduto).sort(function (a, b) {
     return porProduto[b].total - porProduto[a].total;
-  }).forEach(function (k) {
+  });
+  produtosOrdenados.slice(0, TOP_PRODUTOS).forEach(function (k) {
     add_([k, porProduto[k].qtd, round2_(porProduto[k].total)], 'data', [2]);
   });
-  if (!Object.keys(porProduto).length) {
+  if (!produtosOrdenados.length) {
     add_(['(sem composição)', 0, 0], 'data', [2]);
+  } else if (produtosOrdenados.length > TOP_PRODUTOS) {
+    var restoQtd = 0;
+    var restoTotal = 0;
+    produtosOrdenados.slice(TOP_PRODUTOS).forEach(function (k) {
+      restoQtd += porProduto[k].qtd;
+      restoTotal += porProduto[k].total;
+    });
+    add_([
+      '(+ ' + (produtosOrdenados.length - TOP_PRODUTOS) + ' outros)',
+      restoQtd,
+      round2_(restoTotal)
+    ], 'total', [2]);
   }
 
   // —— 8. Top contratos ——
   blank_();
-  add_(['8. TOP 50 CONTRATOS (COBRANÇAS)'], 'section');
+  add_(['8. TOP ' + TOP_CONTRATOS + ' CONTRATOS (COBRANÇAS)'], 'section');
   add_(['Contrato', 'Cliente', 'Qtd', 'Soma R$'], 'header');
-  Object.keys(porContrato).map(function (k) {
+  var contratosOrdenados = Object.keys(porContrato).map(function (k) {
     return { k: k, v: porContrato[k] };
   }).sort(function (a, b) {
     return b.v.total - a.v.total;
-  }).slice(0, 50).forEach(function (o) {
+  });
+  contratosOrdenados.slice(0, TOP_CONTRATOS).forEach(function (o) {
     add_([o.k, o.v.cliente, o.v.qtd, round2_(o.v.total)], 'data', [3]);
   });
-  if (!Object.keys(porContrato).length) {
+  if (!contratosOrdenados.length) {
     add_(['(sem contratos)', '', 0, 0], 'data', [3]);
   }
 
-  var maxCols = 4;
+  var maxCols = 5;
   out.forEach(function (r) {
     if (r.length > maxCols) maxCols = r.length;
   });
@@ -2876,6 +2960,15 @@ function escreverResumo_(ss, cobrancas, contratos, linhasTaxaAdm) {
   });
   sh.getRange(1, 1, matriz.length, maxCols).setValues(matriz);
   formatarAbaResumoAnalitico_(sh, matriz, meta, maxCols);
+  try {
+    sh.activate();
+  } catch (eAct) {}
+
+  return {
+    somaTaxa: round2_(somaTaxaRealizada),
+    somaRepasse: round2_(somaRepasse),
+    coberturaPct: coberturaRepassePct
+  };
 }
 
 function escreverLog_(ss, qtd, inicio, erro, detalheExtra) {

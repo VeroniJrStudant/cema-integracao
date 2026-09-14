@@ -1,0 +1,28 @@
+{
+  "name": "superlogica-crawler",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Crawler Playwright — Superlógica login + MFA via e-mail",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "crawl": "tsx src/index.ts",
+    "auth:login": "tsx src/cli/login.ts",
+    "drive:upload": "tsx src/cli/upload-drive.ts",
+    "install:browsers": "playwright install chromium"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "google-auth-library": "^9.15.1",
+    "imapflow": "^1.0.181",
+    "playwright": "^1.50.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
